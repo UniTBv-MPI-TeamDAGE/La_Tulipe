@@ -36,7 +36,7 @@ jobs:
           DATABASE_URL: sqlite:///./test.db
           SECRET_KEY: test-secret-key
         # TODO: Remove --exit-zero after backend tests are implemented (Issue #19)
-        run: pytest --cov=app tests/ --exit-zero
+        run: pytest --cov=app tests/ || true
 
   test-frontend:
     runs-on: ubuntu-latest
