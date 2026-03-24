@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------
+  # PostgreSQL Database
+  # ----------------------------------------
+  db:
+    image: postgres:15-alpine # Using 15 as 18 is not officially released, adjust if needed
+    container_name: latulipe_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: latulipe_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # ----------------------------------------
+  # Backend (Flask / Python)
+  # ----------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev # Assuming you use the dev version for live reload
+    container_name: latulipe_backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app  # Maps local files to container for hot-reloading
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  # ----------------------------------------
+  # Frontend (React / Vite)
+  # ----------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev # The development Dockerfile we created
+    container_name: latulipe_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:5173"  # README specified port 3000, Vite uses 5173 internally
+    volumes:
+      - ./frontend:/app         # Hot module replacement
+      - /app/node_modules       # Prevent overwriting container's node_modules
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
