@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core.security import create_access_token
 from app.database.db import SessionLocal
 from app.models.user import User
-from app.schemas.auth import RegisterRequest
+from app.schemas.auth import LoginRequest, LoginResponse, RegisterRequest
 
 router = APIRouter()
 
@@ -64,3 +65,26 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     return {"message": "Utilizator creat"}
+
+
+@router.post("/api/auth/login", response_model=LoginResponse)
+def login(data: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
+
+    if not user or not bcrypt.checkpw(
+        data.password.encode(), user.password_hash.encode()
+    ):
+        raise HTTPException(status_code=401, detail="Email sau parola incorecta")
+
+    token = create_access_token(user)
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "nume": user.nume,
+        "role": user.role,
+    }
+
+
+@router.post("/api/auth/logout", status_code=200)
+def logout():
+    return {"message": "Logout realizat"}
