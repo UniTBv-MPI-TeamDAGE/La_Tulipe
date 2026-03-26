@@ -1,7 +1,7 @@
+import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-import bcrypt
 
 from app.database.db import SessionLocal
 from app.models.user import User

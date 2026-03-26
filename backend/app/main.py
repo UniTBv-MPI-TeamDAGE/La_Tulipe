@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from app.routes import auth
+
 from app.database.db import Base, engine
+from app.routes import auth
 
 app = FastAPI()
 
