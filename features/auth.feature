@@ -39,3 +39,45 @@ Feature: Authentication
     When datele sunt salvate in baza de date
     Then parola nu este stocata in plain text
     And este stocata criptat folosind bcrypt
+
+  # ---------------------------
+  # LOGIN
+  # ---------------------------
+
+  Scenario: Login cu date valide
+    Given utilizatorul are un cont valid
+    When introduce email si parola corecte
+    And apasa butonul de login
+    Then autentificarea este reusita
+    And API raspunde cu status 200
+    And primeste un JWT token
+    And tokenul contine rolul utilizatorului
+
+  Scenario: Login cu parola gresita
+    Given utilizatorul are un cont valid
+    When introduce email corect si parola gresita
+    And apasa butonul de login
+    Then API raspunde cu status 401
+    And se afiseaza mesaj "Email sau parola incorecta"
+
+  Scenario: Login cu email inexistent
+    Given nu exista un cont cu emailul "nou@test.com"
+    When utilizatorul incearca sa se logheze
+    Then API raspunde cu status 401
+    And se afiseaza mesaj "Email sau parola incorecta"
+
+  Scenario: Token este salvat dupa login
+    Given utilizatorul se logheaza cu succes
+    When primeste JWT token
+    Then tokenul este salvat in localStorage
+
+  Scenario: Navbar se actualizeaza dupa login
+    Given utilizatorul este logat
+    When acceseaza pagina principala
+    Then navbar afiseaza "Buna, [Nume]"
+
+  Scenario: Logout sterge tokenul
+    Given utilizatorul este logat
+    When apasa butonul "Iesi din cont"
+    Then tokenul este sters din localStorage
+    And utilizatorul este redirectionat catre "/login"
