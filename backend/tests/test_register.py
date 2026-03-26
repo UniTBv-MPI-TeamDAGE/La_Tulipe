@@ -10,9 +10,9 @@ def test_register_valid():
         "/api/auth/register",
         json={
             "nume": "Ana",
-            "email": "ana_test1@test.com",
-            "password": "12345678",
-            "confirm_password": "12345678",
+            "email": "ana_test373@test.com",
+            "password": "123456789",
+            "confirm_password": "123456789",
         },
     )
 
@@ -20,13 +20,13 @@ def test_register_valid():
 
 
 def test_register_duplicate_email():
-    email = "duplicate_test@test.com"
+    email12 = "duplicate_test@test.com"
 
     client.post(
         "/api/auth/register",
         json={
             "nume": "Ana",
-            "email": email,
+            "email": email12,
             "password": "12345678",
             "confirm_password": "12345678",
         },
@@ -36,7 +36,7 @@ def test_register_duplicate_email():
         "/api/auth/register",
         json={
             "nume": "Ana",
-            "email": email,
+            "email": email12,
             "password": "12345678",
             "confirm_password": "12345678",
         },
