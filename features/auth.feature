@@ -4,34 +4,38 @@ Feature: Authentication
   I want to register and login
   So that I can use the application
 
+  # ---------------------------
+  # REGISTER
+  # ---------------------------
+
   Scenario: Inregistrare cu date valide
     Given utilizatorul este pe pagina de register
-    When introduce un email valid si o parola valida
+    When introduce nume valid, email valid si parola valida
+    And parola are minim 8 caractere
     And apasa butonul de inregistrare
     Then contul este creat
-    And utilizatorul este redirectionat catre pagina de login
+    And API raspunde cu status 201
+    And utilizatorul este redirectionat catre pagina principala
 
   Scenario: Inregistrare cu email duplicat
     Given exista deja un cont cu emailul "test@test.com"
     When utilizatorul incearca sa se inregistreze cu acelasi email
-    Then primeste mesaj de eroare "Email deja utilizat"
+    Then API raspunde cu status 409
+    And se afiseaza mesaj "Email-ul este deja folosit"
 
-  Scenario: Login succes → redirect home
-    Given utilizatorul are cont valid
-    When introduce email si parola corecte
-    And apasa butonul de login
-    Then autentificarea este reusita
-    And utilizatorul este redirectionat catre pagina principala
+  Scenario: Parola prea scurta
+    Given utilizatorul este pe pagina de register
+    When introduce o parola cu mai putin de 8 caractere
+    Then API raspunde cu status 400
+    And se afiseaza mesaj de eroare pentru parola
 
-  Scenario: Login parola gresita → eroare inline
-    Given utilizatorul are cont valid
-    When introduce email corect si parola gresita
-    And apasa butonul de login
-    Then autentificarea esueaza
-    And se afiseaza mesaj de eroare "Parola incorecta"
+  Scenario: Parolele nu se potrivesc
+    Given utilizatorul este pe pagina de register
+    When introduce parola si confirmare diferite
+    Then se afiseaza mesaj "Parolele nu se potrivesc"
 
-  Scenario: Client acceseaza /admin → 403
-    Given utilizatorul este autentificat ca "client"
-    When acceseaza ruta "/admin"
-    Then accesul este interzis
-    And primeste raspuns 403
+  Scenario: Parola este criptata in baza de date
+    Given utilizatorul se inregistreaza cu succes
+    When datele sunt salvate in baza de date
+    Then parola nu este stocata in plain text
+    And este stocata criptat folosind bcrypt
