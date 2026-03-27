@@ -4,18 +4,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token
-from app.database.db import SessionLocal
+from app.database.db import get_db
 from app.models.user import User
 from app.schemas.auth import LoginRequest, LoginResponse, RegisterRequest
 
 router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+ADMIN_REGISTRATION_CODE = "adminLT#2026"
 
 
 @router.post("/api/auth/register", status_code=201)
@@ -31,6 +25,9 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
             status_code=400,
             detail="Parolele nu se potrivesc"
         )
+
+    if data.role == "admin" and data.admin_code != ADMIN_REGISTRATION_CODE:
+        raise HTTPException(status_code=403, detail="Cod admin invalid")
 
     existing_user = db.query(User).filter(User.email == data.email).first()
     if existing_user:

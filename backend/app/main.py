@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.bootstrap import ensure_default_admin
 from app.database.db import Base, engine
-from app.routes import auth
+from app.routes import auth, users
 
 app = FastAPI()
 
@@ -22,3 +22,4 @@ Base.metadata.create_all(bind=engine)
 ensure_default_admin()
 
 app.include_router(auth.router)
+app.include_router(users.router)
