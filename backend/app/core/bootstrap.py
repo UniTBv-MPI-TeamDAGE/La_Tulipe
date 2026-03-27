@@ -24,11 +24,11 @@ def ensure_default_admin() -> None:
         ).decode()
 
         admin = User(
-            nume=DEFAULT_ADMIN_NAME,
+            name=DEFAULT_ADMIN_NAME,
             email=DEFAULT_ADMIN_EMAIL,
             password_hash=hashed,
             role="admin",
-            telefon="0723658900",
+            phone="0723658900",
         )
         db.add(admin)
         db.commit()

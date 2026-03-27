@@ -4,11 +4,11 @@ from pydantic import BaseModel, EmailStr
 
 
 class RegisterRequest(BaseModel):
-    nume: str
+    name: str
     email: EmailStr
     password: str
     confirm_password: str
-    telefon: str | None = None
+    phone: str | None = None
     role: Literal["customer", "admin"] = "customer"
     admin_code: str | None = None
 
@@ -21,16 +21,16 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    nume: str
+    name: str
     role: str
 
 
 class UserMeResponse(BaseModel):
-    nume: str
+    name: str
     email: EmailStr
-    telefon: str | None = None
+    phone: str | None = None
 
 
 class UpdateMeRequest(BaseModel):
-    nume: str | None = None
-    telefon: str | None = None
+    name: str | None = None
+    phone: str | None = None

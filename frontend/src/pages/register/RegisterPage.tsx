@@ -5,10 +5,11 @@ import type { RegisterRequest } from "../../dtos/auth";
 import styles from "./RegisterPage.module.css";
 
 interface FormErrors {
-  nume?: string;
+  name?: string;
   email?: string;
   password?: string;
   confirm_password?: string;
+  admin_code?:string;
   general?: string;
 }
 
@@ -16,11 +17,13 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState<RegisterRequest>({
-    nume: "",
+    name: "",
     email: "",
     password: "",
     confirm_password: "",
-    telefon: "",
+    phone: "",
+    role: "customer",   
+    admin_code: "", 
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
@@ -35,12 +38,15 @@ export default function RegisterPage() {
 
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
-    if (!form.nume.trim()) errs.nume = "Name required";
+    if (!form.name.trim()) errs.name = "Name required";
     if (!form.email.trim()) errs.email = "Email required";
     if (form.password.length < 8)
       errs.password = "Password must have at least 8 characters";
     if (form.password !== form.confirm_password)
       errs.confirm_password = "Passwords don't match";
+    if (form.role === "admin" && !form.admin_code)
+    {    errs.admin_code = "Admin code is required";}
+
     return errs;
   };
 
@@ -66,7 +72,10 @@ export default function RegisterPage() {
         } else {
           setErrors({ general: msg });
         }
-      } else {
+      } else if (apiErr.status === 403) {
+        setErrors({ admin_code: "Invalid admin code" });}
+      
+      else {
         setErrors({ general: "Couldn't connect to the server" });
       }
     } finally {
@@ -97,11 +106,11 @@ export default function RegisterPage() {
           )}
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="reg-nume">Full name</label>
-            <input id="reg-nume" name="nume" type="text" autoComplete="name"
-              value={form.nume} onChange={handleChange} placeholder="Ana Popescu"
-              className={`${styles.input} ${errors.nume ? styles.inputError : ""}`} />
-            {errors.nume && <span className={styles.fieldError} role="alert">{errors.nume}</span>}
+            <label className={styles.label} htmlFor="reg-name">Full name</label>
+            <input id="reg-name" name="name" type="text" autoComplete="name"
+              value={form.name} onChange={handleChange} placeholder="Ana Popescu"
+              className={`${styles.input} ${errors.name ? styles.inputError : ""}`} />
+            {errors.name && <span className={styles.fieldError} role="alert">{errors.name}</span>}
           </div>
 
           <div className={styles.field}>
@@ -113,13 +122,48 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="reg-telefon">
-              Telefon <span className={styles.optional}>(opțional)</span>
+            <label className={styles.label} htmlFor="reg-phone">
+              Phone <span className={styles.optional}>(optional)</span>
             </label>
-            <input id="reg-telefon" name="telefon" type="tel" autoComplete="tel"
-              value={form.telefon} onChange={handleChange} placeholder="07xx xxx xxx"
+            <input id="reg-phone" name="phone" type="tel" autoComplete="tel"
+              value={form.phone} onChange={handleChange} placeholder="07xx xxx xxx"
               className={styles.input} />
           </div>
+
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="reg-role">Account type</label>
+            <select
+              id="reg-role"
+              name="role"
+              value={form.role}
+              onChange={(e) => {
+                setForm((prev) => ({ ...prev, role: e.target.value as "customer" | "admin", admin_code: "" }));
+                setErrors((prev) => ({ ...prev, admin_code: undefined }));
+              }}
+              className={styles.input}
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+
+          {form.role === "admin" && (
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="reg-admincode">Admin secret code</label>
+              <input
+                id="reg-admincode"
+                name="admin_code"
+                type="password"
+                value={form.admin_code}
+                onChange={handleChange}
+                placeholder="Enter admin code"
+                className={`${styles.input} ${errors.admin_code ? styles.inputError : ""}`}
+              />
+              {errors.admin_code && (
+                <span className={styles.fieldError} role="alert">{errors.admin_code}</span>
+              )}
+            </div>
+          )}
 
           <div className={styles.row}>
             <div className={styles.field}>

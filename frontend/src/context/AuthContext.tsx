@@ -2,14 +2,16 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from "
 
 interface User {
   token: string;
-  nume: string;
+  name: string;
   role: string;
+  email: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (data: { access_token: string; nume: string; role: string }) => void;
+  login: (data: { access_token: string; name: string; role: string; email: string }) => void;
   logout: () => void;
+  updateUser: (data: { name?: string; phone?: string }) => void;
   loading: boolean;
 }
 
@@ -21,30 +23,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    const nume = localStorage.getItem("user_nume");
+    const name = localStorage.getItem("user_name");
     const role = localStorage.getItem("user_role");
-    if (token && nume && role) {
-      setUser({ token, nume, role });
+    const email = localStorage.getItem("user_email");
+    if (token && name && role && email) {
+      setUser({ token, name, role, email });
     }
     setLoading(false);
   }, []);
 
-  const login = (data: { access_token: string; nume: string; role: string }) => {
+  const login = (data: { access_token: string; name: string; role: string ; email:string}) => {
     localStorage.setItem("access_token", data.access_token);
-    localStorage.setItem("user_nume", data.nume);
+    localStorage.setItem("user_name", data.name);
     localStorage.setItem("user_role", data.role);
-    setUser({ token: data.access_token, nume: data.nume, role: data.role });
+    localStorage.setItem("user_email", data.email);
+    setUser({ token: data.access_token, name: data.name, role: data.role , email: data.email});
   };
 
   const logout = () => {
     localStorage.removeItem("access_token");
-    localStorage.removeItem("user_nume");
+    localStorage.removeItem("user_name");
     localStorage.removeItem("user_role");
+    localStorage.removeItem("user_email"); 
     setUser(null);
   };
 
+  const updateUser = (data: { name?: string; phone?: string }) => {
+    if (!user) return;
+    if (data.name) {
+      localStorage.setItem("user_name", data.name);
+      setUser((prev) => prev ? { ...prev, name: data.name! } : prev);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
