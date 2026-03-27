@@ -12,9 +12,9 @@ router = APIRouter(prefix="/api/users", tags=["users"])
 @router.get("/me", response_model=UserMeResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return {
-        "nume": current_user.nume,
+        "name": current_user.name,
         "email": current_user.email,
-        "telefon": current_user.telefon,
+        "phone": current_user.phone,
     }
 
 
@@ -24,18 +24,18 @@ def update_me(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if data.nume is not None:
-        current_user.nume = data.nume
+    if data.name is not None:
+        current_user.name = data.name
 
-    if data.telefon is not None:
-        current_user.telefon = data.telefon
+    if data.phone is not None:
+        current_user.phone = data.phone
 
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
 
     return {
-        "nume": current_user.nume,
+        "name": current_user.name,
         "email": current_user.email,
-        "telefon": current_user.telefon,
+        "phone": current_user.phone,
     }

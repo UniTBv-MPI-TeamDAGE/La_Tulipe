@@ -42,11 +42,11 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     ).decode()
 
     user = User(
-        nume=data.nume,
+        name=data.name,
         email=data.email,
         password_hash=hashed,
         role=data.role,
-        telefon=data.telefon
+        phone=data.phone
     )
 
     db.add(user)
@@ -77,7 +77,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "token_type": "bearer",
-        "nume": user.nume,
+        "name": user.name,
         "role": user.role,
     }
 

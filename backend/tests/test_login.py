@@ -12,7 +12,7 @@ def test_login_valid():
     client.post(
         "/api/auth/register",
         json={
-            "nume": "Login User",
+            "name": "Login User",
             "email": email,
             "password": password,
             "confirm_password": password,
@@ -31,7 +31,7 @@ def test_login_valid():
     data = response.json()
     assert "access_token" in data
     assert data["token_type"] == "bearer"
-    assert data["nume"] == "Login User"
+    assert data["name"] == "Login User"
     assert data["role"] == "customer"
 
 
@@ -42,7 +42,7 @@ def test_login_invalid_password():
     client.post(
         "/api/auth/register",
         json={
-            "nume": "Wrong Pass User",
+            "name": "Wrong Pass User",
             "email": email,
             "password": password,
             "confirm_password": password,
