@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { loginUser } from "../../services/authService";
+import { loginUser, getUserMe } from "../../services/authService";
 import styles from "./LoginPage.module.css";
 
 interface FormErrors {
@@ -27,34 +27,41 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
-  const errs: FormErrors = {};
-  if (!form.email.trim()) errs.email = "Email required";
-  if (!form.password) errs.password = "Password required";
-  if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    e.preventDefault();
+    const errs: FormErrors = {};
+    if (!form.email.trim()) errs.email = "Email required";
+    if (!form.password) errs.password = "Password required";
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
-  setLoading(true);
-  try {
-    const data = await loginUser(form);
-    login(data);
+    setLoading(true);
+    try {
+      const data = await loginUser(form);
+      console.log("LOGIN RESPONSE:", data);
 
-    if (data.role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/");
+      let name = data.name;
+      if (!name) {
+        const me = await getUserMe(data.access_token);
+        name = me.name;
+      }
+
+      login({ ...data, name, email: form.email });
+
+      if (data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (err: unknown) {
+      const apiErr = err as { status: number; detail: string };
+      if (apiErr.status === 401) {
+        setErrors({ general: "Incorrect email or password" });
+      } else {
+        setErrors({ general: "Could not connect to the server" });
+      }
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err: unknown) {
-    const apiErr = err as { status: number; detail: string };
-    if (apiErr.status === 401) {
-      setErrors({ general: "Email or password wrong" });
-    } else {
-      setErrors({ general: "Couldn't connect to the server" });
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className={styles.page}>
@@ -87,7 +94,7 @@ export default function LoginPage() {
           <div className={styles.field}>
             <label className={styles.label} htmlFor="login-email">Email</label>
             <input id="login-email" name="email" type="email" autoComplete="email"
-              value={form.email} onChange={handleChange} placeholder="adress@example.com"
+              value={form.email} onChange={handleChange} placeholder="address@example.com"
               className={`${styles.input} ${errors.email ? styles.inputError : ""}`} />
             {errors.email && <span className={styles.fieldError} role="alert">{errors.email}</span>}
           </div>
@@ -101,14 +108,13 @@ export default function LoginPage() {
           </div>
 
           <button type="submit" className={styles.btnPrimary} disabled={loading}>
-            {loading ? <><span className={styles.spinner} /> Se verifică...</> : "Login"}
+            {loading ? <><span className={styles.spinner} /> Verifying...</> : "Login"}
           </button>
 
           <button type="button" className={styles.btnSecondary} onClick={() => navigate("/register")}>
             Register
           </button>
         </form>
-
       </div>
     </div>
   );

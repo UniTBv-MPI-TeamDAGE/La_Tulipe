@@ -1,9 +1,11 @@
 export interface RegisterRequest {
-  nume: string;
+  name: string;
   email: string;
   password: string;
   confirm_password: string;
-  telefon?: string;
+  phone?: string;
+  role: "customer" | "admin";
+  admin_code?: string;
 }
 
 export interface LoginRequest {
@@ -14,6 +16,17 @@ export interface LoginRequest {
 export interface LoginResponse {
   access_token: string;
   token_type: string;
-  nume: string;
+  name: string;
   role: string;
+}
+
+export interface UserMeResponse{
+  name: string;
+  email: string;
+  phone?: string;
+}
+
+export interface UpdateMeRequest{
+  name?: string;
+  phone?: string;
 }
