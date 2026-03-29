@@ -17,23 +17,23 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if len(data.password) < 8:
         raise HTTPException(
             status_code=400,
-            detail="Parola trebuie sa aiba cel putin 8 caractere"
+            detail="Password must be at least 8 characters long"
         )
 
     if data.password != data.confirm_password:
         raise HTTPException(
             status_code=400,
-            detail="Parolele nu se potrivesc"
+            detail="Passwords do not match"
         )
 
     if data.role == "admin" and data.admin_code != ADMIN_REGISTRATION_CODE:
-        raise HTTPException(status_code=403, detail="Cod admin invalid")
+        raise HTTPException(status_code=403, detail="Invalid admin code")
 
     existing_user = db.query(User).filter(User.email == data.email).first()
     if existing_user:
         raise HTTPException(
             status_code=409,
-            detail="Email-ul este deja folosit"
+            detail="Email is already registered"
         )
 
     hashed = bcrypt.hashpw(
@@ -56,12 +56,12 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Email-ul este deja folosit"
+            detail="Email is already registered"
         ) from None
 
     db.refresh(user)
 
-    return {"message": "Utilizator creat"}
+    return {"message": "User created"}
 
 
 @router.post("/api/auth/login", response_model=LoginResponse)
@@ -71,7 +71,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     if not user or not bcrypt.checkpw(
         data.password.encode(), user.password_hash.encode()
     ):
-        raise HTTPException(status_code=401, detail="Email sau parola incorecta")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
     token = create_access_token(user)
     return {
@@ -84,4 +84,4 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/api/auth/logout", status_code=200)
 def logout():
-    return {"message": "Logout realizat"}
+    return {"message": "Logout successful"}

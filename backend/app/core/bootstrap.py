@@ -7,7 +7,7 @@ from app.models.user import User
 
 DEFAULT_ADMIN_EMAIL = os.getenv("ADMIN_DEFAULT_EMAIL", "admin@latulipe.ro")
 DEFAULT_ADMIN_NAME = os.getenv("ADMIN_DEFAULT_NAME", "Admin La Tulipe")
-DEFAULT_ADMIN_PASSWORD = os.getenv("ADMIN_DEFAULT_PASSWORD", "parola123")
+DEFAULT_ADMIN_PASSWORD = os.getenv("ADMIN_DEFAULT_PASSWORD", "default123")
 
 
 def ensure_default_admin() -> None:
