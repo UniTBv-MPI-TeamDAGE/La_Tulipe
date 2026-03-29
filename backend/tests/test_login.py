@@ -58,3 +58,4 @@ def test_login_invalid_password():
     )
 
     assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid email or password"
