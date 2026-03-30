@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.bootstrap import ensure_default_admin
-from app.routes import auth, categories, users
+from app.routes import auth, categories, products, users
 
 app = FastAPI()
 
@@ -22,3 +22,4 @@ ensure_default_admin()
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(categories.router)
+app.include_router(products.router)
