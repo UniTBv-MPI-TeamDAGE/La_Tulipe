@@ -1,15 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.database.db import get_db
 from app.middleware.auth import get_current_admin
 from app.models.category import Category
+from app.models.product import Product
 from app.models.user import User
 from app.schemas.category import (
     CategoryCreate,
     CategoryResponse,
     CategoryUpdate,
 )
+from app.schemas.product import ProductResponse
 
 router = APIRouter(prefix="/api/categories", tags=["categories"])
 
@@ -25,6 +27,21 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     return category
+
+
+@router.get("/{category_id}/products", response_model=list[ProductResponse])
+def get_products_by_category(category_id: int, db: Session = Depends(get_db)):
+    category = db.query(Category).filter(Category.id == category_id).first()
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    return (
+        db.query(Product)
+        .options(joinedload(Product.category))
+        .filter(Product.category_id == category_id)
+        .order_by(Product.id.asc())
+        .all()
+    )
 
 
 @router.post("", response_model=CategoryResponse, status_code=201)

@@ -4,7 +4,7 @@ from app.schemas.category import (
 	CategoryResponse,
 	CategoryUpdate,
 )
-from app.schemas.product import ProductResponse
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from app.schemas.user import UpdateMeRequest, UserMeResponse
 
 __all__ = [
@@ -15,6 +15,8 @@ __all__ = [
 	"CategoryCreate",
 	"CategoryUpdate",
 	"ProductResponse",
+	"ProductCreate",
+	"ProductUpdate",
 	"UserMeResponse",
 	"UpdateMeRequest",
 ]
