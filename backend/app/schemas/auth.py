@@ -23,14 +23,3 @@ class LoginResponse(BaseModel):
     token_type: str = "bearer"
     name: str
     role: str
-
-
-class UserMeResponse(BaseModel):
-    name: str
-    email: EmailStr
-    phone: str | None = None
-
-
-class UpdateMeRequest(BaseModel):
-    name: str | None = None
-    phone: str | None = None

@@ -1,3 +1,5 @@
+import os
+
 import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
@@ -9,7 +11,7 @@ from app.models.user import User
 from app.schemas.auth import LoginRequest, LoginResponse, RegisterRequest
 
 router = APIRouter()
-ADMIN_REGISTRATION_CODE = "adminLT#2026"
+ADMIN_REGISTRATION_CODE = os.getenv("ADMIN_REGISTRATION_CODE")
 
 
 @router.post("/api/auth/register", status_code=201)
@@ -26,8 +28,14 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
             detail="Passwords do not match"
         )
 
-    if data.role == "admin" and data.admin_code != ADMIN_REGISTRATION_CODE:
-        raise HTTPException(status_code=403, detail="Invalid admin code")
+    if data.role == "admin":
+        if not ADMIN_REGISTRATION_CODE:
+            raise HTTPException(
+                status_code=500,
+                detail="Admin registration is not configured",
+            )
+        if data.admin_code != ADMIN_REGISTRATION_CODE:
+            raise HTTPException(status_code=403, detail="Invalid admin code")
 
     existing_user = db.query(User).filter(User.email == data.email).first()
     if existing_user:
