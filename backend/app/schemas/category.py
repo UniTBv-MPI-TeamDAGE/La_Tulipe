@@ -7,3 +7,11 @@ class CategoryResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class CategoryCreate(BaseModel):
+    name: str
+
+
+class CategoryUpdate(BaseModel):
+    name: str | None = None
