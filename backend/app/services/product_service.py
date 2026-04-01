@@ -2,13 +2,14 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.category import Category
-from app.models.product import Product
+from app.models.product import Product, ProductType
 
 
 def get_filtered_products(
     db: Session,
     search: str | None = None,
     category: str | None = None,
+    product_type: ProductType | None = None,
     min_price: float | None = None,
     max_price: float | None = None,
 ) -> list[Product]:
@@ -34,6 +35,9 @@ def get_filtered_products(
 
     if max_price is not None:
         query = query.filter(Product.price <= max_price)
+
+    if product_type is not None:
+        query = query.filter(Product.product_type == product_type)
 
     return query.order_by(Product.id.asc()).all()
 
@@ -67,6 +71,7 @@ def create_product(
     stock: int,
     image_url: str | None,
     is_featured: bool,
+    product_type: ProductType,
     category_id: int,
     db: Session,
 ) -> Product:
@@ -80,6 +85,7 @@ def create_product(
         stock=stock,
         image_url=image_url,
         is_featured=is_featured,
+        product_type=product_type,
         category_id=category_id,
     )
     db.add(product)
@@ -102,6 +108,7 @@ def update_product(
     stock: int | None,
     image_url: str | None,
     is_featured: bool | None,
+    product_type: ProductType | None,
     category_id: int | None,
     db: Session,
 ) -> Product:
@@ -125,6 +132,8 @@ def update_product(
         product.image_url = image_url
     if is_featured is not None:
         product.is_featured = is_featured
+    if product_type is not None:
+        product.product_type = product_type
 
     db.add(product)
     db.commit()

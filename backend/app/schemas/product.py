@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+from app.models.product import ProductType
 from app.schemas.category import CategoryResponse
 
 
@@ -10,6 +11,7 @@ class ProductResponse(BaseModel):
     stock: int
     image_url: str | None = None
     is_featured: bool
+    product_type: ProductType
     category: CategoryResponse
 
     class Config:
@@ -22,6 +24,7 @@ class ProductCreate(BaseModel):
     stock: int = Field(ge=0)
     image_url: str | None = None
     is_featured: bool = False
+    product_type: ProductType = ProductType.INDIVIDUAL
     category_id: int
 
 
@@ -31,4 +34,5 @@ class ProductUpdate(BaseModel):
     stock: int | None = Field(default=None, ge=0)
     image_url: str | None = None
     is_featured: bool | None = None
+    product_type: ProductType | None = None
     category_id: int | None = None
