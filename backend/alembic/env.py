@@ -9,10 +9,19 @@ from alembic import context
 from app.database.db import Base
 from app.models import category as category_model
 from app.models import color as color_model
+from app.models import order as order_model
+from app.models import order_item as order_item_model
 from app.models import product as product_model
 from app.models import user as user_model
 
-MODEL_MODULES = (user_model, category_model, product_model, color_model)
+MODEL_MODULES = (
+    user_model,
+    category_model,
+    product_model,
+    color_model,
+    order_model,
+    order_item_model,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
