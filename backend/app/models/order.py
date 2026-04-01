@@ -7,7 +7,8 @@ from app.database.db import Base
 
 
 class OrderStatus(str, Enum):
-    PLACED = "placed"
+    PENDING= "pending"
+    CONFIRMED= "confirmed"
     DELIVERED = "delivered"
     CANCELLED = "cancelled"
 
@@ -27,7 +28,7 @@ class Order(Base):
     status = Column(
         SqlEnum(OrderStatus, name="order_status_enum"),
         nullable=False,
-        default=OrderStatus.PLACED,
+        default=OrderStatus.PENDING,
     )
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
