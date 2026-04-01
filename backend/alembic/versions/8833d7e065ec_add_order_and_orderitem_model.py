@@ -7,7 +7,6 @@ Create Date: 2026-04-01 17:20:28.868030
 """
 from typing import Sequence, Union
 
-
 # revision identifiers, used by Alembic.
 revision: str = "8833d7e065ec"
 down_revision: Union[str, Sequence[str], None] = "f4a7c2d9e1b3"

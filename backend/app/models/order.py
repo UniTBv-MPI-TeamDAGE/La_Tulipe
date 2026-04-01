@@ -1,6 +1,7 @@
 from enum import Enum
 
-from sqlalchemy import Column, DateTime, Enum as SqlEnum, Float, ForeignKey, Integer, String, func
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import relationship
 
 from app.database.db import Base
@@ -30,7 +31,11 @@ class Order(Base):
         nullable=False,
         default=OrderStatus.PENDING,
     )
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
 
     user = relationship("User", backref="orders")
     items = relationship(

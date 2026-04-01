@@ -50,7 +50,10 @@ def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
         product = products_by_id[product_id]
         if product.stock < needed_quantity:
             insufficient_stock_items.append(
-                f"{product.name} (requested {needed_quantity}, available {product.stock})"
+                (
+                    f"{product.name} (requested {needed_quantity}, "
+                    f"available {product.stock})"
+                )
             )
 
     if insufficient_stock_items:
@@ -107,3 +110,26 @@ def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
         .filter(Order.id == order.id)
         .first()
     )
+
+
+def get_my_orders(current_user: User, db: Session) -> list[Order]:
+    return (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .filter(Order.user_id == current_user.id)
+        .order_by(Order.created_at.desc(), Order.id.desc())
+        .all()
+    )
+
+
+def get_my_order_or_404(order_id: int, current_user: User, db: Session) -> Order:
+    order = (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .filter(Order.id == order_id, Order.user_id == current_user.id)
+        .first()
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return order

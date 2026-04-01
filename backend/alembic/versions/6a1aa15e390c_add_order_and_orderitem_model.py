@@ -7,9 +7,9 @@ Create Date: 2026-04-01 17:29:55.242193
 """
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '6a1aa15e390c'
@@ -31,13 +31,27 @@ def upgrade() -> None:
     sa.Column('delivery_address', sa.String(), nullable=False),
     sa.Column('card_message', sa.String(), nullable=True),
     sa.Column('total_price', sa.Float(), nullable=False),
-    sa.Column('status', sa.Enum('PLACED', 'DELIVERED', 'CANCELLED', name='order_status_enum'), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column(
+        'status',
+        sa.Enum('PLACED', 'DELIVERED', 'CANCELLED', name='order_status_enum'),
+        nullable=False,
+    ),
+    sa.Column(
+        'created_at',
+        sa.DateTime(timezone=True),
+        server_default=sa.text('now()'),
+        nullable=False,
+    ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_orders_id'), 'orders', ['id'], unique=False)
-    op.create_index(op.f('ix_orders_order_number'), 'orders', ['order_number'], unique=True)
+    op.create_index(
+        op.f('ix_orders_order_number'),
+        'orders',
+        ['order_number'],
+        unique=True,
+    )
     op.create_table('order_items',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('order_id', sa.Integer(), nullable=False),
