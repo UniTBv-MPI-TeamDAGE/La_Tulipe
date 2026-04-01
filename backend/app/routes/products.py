@@ -54,11 +54,14 @@ def create_product(
 ):
     return product_service.create_product(
         name=data.name,
+        description=data.description,
         price=data.price,
         stock=data.stock,
         image_url=data.image_url,
         is_featured=data.is_featured,
+        season=data.season,
         product_type=data.product_type,
+        color_ids=data.color_ids,
         category_id=data.category_id,
         db=db,
     )
@@ -74,11 +77,14 @@ def update_product(
     return product_service.update_product(
         product_id=product_id,
         name=data.name,
+        description=data.description,
         price=data.price,
         stock=data.stock,
         image_url=data.image_url,
         is_featured=data.is_featured,
+        season=data.season,
         product_type=data.product_type,
+        color_ids=data.color_ids,
         category_id=data.category_id,
         db=db,
     )
