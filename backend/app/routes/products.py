@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database.db import get_db
 from app.middleware.auth import get_current_admin
+from app.models.product import ProductType
 from app.models.user import User
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from app.services import product_service
@@ -14,6 +15,7 @@ router = APIRouter(prefix="/api/products", tags=["products"])
 def get_products(
     search: str | None = Query(default=None, min_length=2),
     category: str | None = Query(default=None),
+    product_type: ProductType | None = Query(default=None, alias="type"),
     min_price: float | None = Query(default=None, ge=0),
     max_price: float | None = Query(default=None, ge=0),
     db: Session = Depends(get_db),
@@ -28,6 +30,7 @@ def get_products(
         db=db,
         search=search,
         category=category,
+        product_type=product_type,
         min_price=min_price,
         max_price=max_price,
     )
@@ -51,10 +54,14 @@ def create_product(
 ):
     return product_service.create_product(
         name=data.name,
+        description=data.description,
         price=data.price,
         stock=data.stock,
         image_url=data.image_url,
         is_featured=data.is_featured,
+        season=data.season,
+        product_type=data.product_type,
+        color_ids=data.color_ids,
         category_id=data.category_id,
         db=db,
     )
@@ -70,10 +77,14 @@ def update_product(
     return product_service.update_product(
         product_id=product_id,
         name=data.name,
+        description=data.description,
         price=data.price,
         stock=data.stock,
         image_url=data.image_url,
         is_featured=data.is_featured,
+        season=data.season,
+        product_type=data.product_type,
+        color_ids=data.color_ids,
         category_id=data.category_id,
         db=db,
     )

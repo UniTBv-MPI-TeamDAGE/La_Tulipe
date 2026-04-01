@@ -4,6 +4,7 @@ from app.schemas.category import (
 	CategoryResponse,
 	CategoryUpdate,
 )
+from app.schemas.color import ColorCreate, ColorResponse, ColorUpdate
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from app.schemas.user import UpdateMeRequest, UserMeResponse
 
@@ -14,6 +15,9 @@ __all__ = [
 	"CategoryResponse",
 	"CategoryCreate",
 	"CategoryUpdate",
+	"ColorResponse",
+	"ColorCreate",
+	"ColorUpdate",
 	"ProductResponse",
 	"ProductCreate",
 	"ProductUpdate",
