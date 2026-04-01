@@ -5,6 +5,8 @@ from app.schemas.category import (
 	CategoryUpdate,
 )
 from app.schemas.color import ColorCreate, ColorResponse, ColorUpdate
+from app.schemas.order import OrderCreate, OrderResponse
+from app.schemas.order_item import OrderItemCreate, OrderItemResponse
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from app.schemas.user import UpdateMeRequest, UserMeResponse
 
@@ -18,6 +20,10 @@ __all__ = [
 	"ColorResponse",
 	"ColorCreate",
 	"ColorUpdate",
+	"OrderCreate",
+	"OrderResponse",
+	"OrderItemCreate",
+	"OrderItemResponse",
 	"ProductResponse",
 	"ProductCreate",
 	"ProductUpdate",
