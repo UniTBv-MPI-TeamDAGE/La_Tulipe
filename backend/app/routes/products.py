@@ -1,48 +1,49 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, joinedload
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
 
 from app.database.db import get_db
 from app.middleware.auth import get_current_admin
-from app.models.category import Category
-from app.models.product import Product
+from app.models.product import ProductType
 from app.models.user import User
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from app.services import product_service
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 
 
 @router.get("", response_model=list[ProductResponse])
-def get_products(db: Session = Depends(get_db)):
-    return (
-        db.query(Product)
-        .options(joinedload(Product.category))
-        .order_by(Product.id.asc())
-        .all()
+def get_products(
+    search: str | None = Query(default=None, min_length=2),
+    category: str | None = Query(default=None),
+    product_type: ProductType | None = Query(default=None, alias="type"),
+    min_price: float | None = Query(default=None, ge=0),
+    max_price: float | None = Query(default=None, ge=0),
+    db: Session = Depends(get_db),
+):
+    if min_price is not None and max_price is not None and min_price > max_price:
+        raise HTTPException(
+            status_code=400,
+            detail="min_price cannot be greater than max_price",
+        )
+
+    return product_service.get_filtered_products(
+        db=db,
+        search=search,
+        category=category,
+        product_type=product_type,
+        min_price=min_price,
+        max_price=max_price,
     )
 
 
 @router.get("/featured", response_model=list[ProductResponse])
 def get_featured_products(db: Session = Depends(get_db)):
-    return (
-        db.query(Product)
-        .options(joinedload(Product.category))
-        .filter(Product.is_featured.is_(True))
-        .order_by(Product.id.asc())
-        .all()
-    )
+    return product_service.get_featured_products(db=db)
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
-    product = (
-        db.query(Product)
-        .options(joinedload(Product.category))
-        .filter(Product.id == product_id)
-        .first()
-    )
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return product
+    return product_service.get_product_or_404(product_id=product_id, db=db)
 
 
 @router.post("", response_model=ProductResponse, status_code=201)
@@ -51,27 +52,18 @@ def create_product(
     current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
-    category = db.query(Category).filter(Category.id == data.category_id).first()
-    if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
-
-    product = Product(
+    return product_service.create_product(
         name=data.name,
+        description=data.description,
         price=data.price,
         stock=data.stock,
         image_url=data.image_url,
         is_featured=data.is_featured,
+        season=data.season,
+        product_type=data.product_type,
+        color_ids=data.color_ids,
         category_id=data.category_id,
-    )
-    db.add(product)
-    db.commit()
-    db.refresh(product)
-
-    return (
-        db.query(Product)
-        .options(joinedload(Product.category))
-        .filter(Product.id == product.id)
-        .first()
+        db=db,
     )
 
 
@@ -82,36 +74,19 @@ def update_product(
     current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
-    product = db.query(Product).filter(Product.id == product_id).first()
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-
-    if data.category_id is not None:
-        category = db.query(Category).filter(Category.id == data.category_id).first()
-        if not category:
-            raise HTTPException(status_code=404, detail="Category not found")
-        product.category_id = data.category_id
-
-    if data.name is not None:
-        product.name = data.name
-    if data.price is not None:
-        product.price = data.price
-    if data.stock is not None:
-        product.stock = data.stock
-    if data.image_url is not None:
-        product.image_url = data.image_url
-    if data.is_featured is not None:
-        product.is_featured = data.is_featured
-
-    db.add(product)
-    db.commit()
-    db.refresh(product)
-
-    return (
-        db.query(Product)
-        .options(joinedload(Product.category))
-        .filter(Product.id == product.id)
-        .first()
+    return product_service.update_product(
+        product_id=product_id,
+        name=data.name,
+        description=data.description,
+        price=data.price,
+        stock=data.stock,
+        image_url=data.image_url,
+        is_featured=data.is_featured,
+        season=data.season,
+        product_type=data.product_type,
+        color_ids=data.color_ids,
+        category_id=data.category_id,
+        db=db,
     )
 
 
@@ -121,9 +96,4 @@ def delete_product(
     current_user: User = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
-    product = db.query(Product).filter(Product.id == product_id).first()
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-
-    db.delete(product)
-    db.commit()
+    product_service.delete_product(product_id=product_id, db=db)
