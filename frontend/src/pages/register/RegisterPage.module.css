@@ -3,10 +3,11 @@
 
 .page {
   min-height: 100vh;
-  background-color: #F5F1E8;
-  background-image:
-    radial-gradient(ellipse at 0% 100%, rgba(116,134,122,0.12) 0%, transparent 55%),
-    radial-gradient(ellipse at 100% 0%, rgba(230,212,203,0.4) 0%, transparent 50%);
+  background-image: url('../../assets/background_log_reg.jpg');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,16 +43,19 @@
   margin-bottom: 6px;
 }
 
-.logoText {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 32px;
-  font-weight: 400;
-  font-style: italic;
-  color: #D4888C;
-  letter-spacing: 0.01em;
+.logoIcon { width: 22px; height: 44px; flex-shrink: 0; }
+
+.logoFixed {
+  position: fixed;
+  top: 0px;
+  left: 32px;
+  z-index: 100;
 }
 
-.logoIcon { width: 22px; height: 44px; flex-shrink: 0; }
+.logoFixed img {
+  height: 110px;
+  object-fit: contain;
+}
 
 .tagline {
   font-size: 11px;
@@ -175,6 +179,5 @@
   .form { padding: 22px 24px; }
   .footer { padding: 0 24px 24px; }
   .row { grid-template-columns: 1fr; }
-  .logoText { font-size: 26px; }
   .title { font-size: 22px; }
 }
