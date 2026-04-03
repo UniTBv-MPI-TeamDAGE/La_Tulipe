@@ -58,12 +58,15 @@ def _validate_color_stock_total(
     total_stock: int,
     color_stock_pairs: list[tuple[int, int]],
 ) -> None:
+    if not color_stock_pairs:
+        return
+
     total_color_stock = sum(stock for _, stock in color_stock_pairs)
     if total_color_stock > total_stock:
         raise HTTPException(
             status_code=400,
             detail=(
-                "Total stock from color_stocks cannot exceed product stock "
+                "Sum of color-specific stocks cannot exceed product total stock "
                 f"({total_color_stock} > {total_stock})"
             ),
         )
@@ -171,7 +174,9 @@ def get_filtered_products(
         color = db.query(Color).filter(Color.id == color_id).first()
         if not color:
             raise HTTPException(status_code=400, detail="Color not found")
-        query = query.filter(Product.color_stocks.any(ProductColorStock.color_id == color_id))
+        query = query.filter(
+            Product.color_stocks.any(ProductColorStock.color_id == color_id)
+        )
 
     return query.order_by(Product.id.asc()).all()
 
@@ -227,10 +232,11 @@ def create_product(
     resolved_color_stocks = _resolve_color_stock_pairs(
         color_stocks=color_stocks,
     )
-    _validate_color_stock_total(
-        total_stock=stock,
-        color_stock_pairs=resolved_color_stocks,
-    )
+    if resolved_color_stocks:
+        _validate_color_stock_total(
+            total_stock=stock,
+            color_stock_pairs=resolved_color_stocks,
+        )
 
     product = Product(
         name=name,
@@ -310,21 +316,25 @@ def update_product(
         resolved_color_stocks = _resolve_color_stock_pairs(
             color_stocks=color_stocks,
         )
-        _merge_product_color_stocks(
-            product=product,
-            incoming_color_stock_pairs=resolved_color_stocks,
-            total_stock=target_stock,
-            db=db,
-        )
+        if resolved_color_stocks:
+            _merge_product_color_stocks(
+                product=product,
+                incoming_color_stock_pairs=resolved_color_stocks,
+                total_stock=target_stock,
+                db=db,
+            )
+        else:
+            product.color_stocks = []
     elif stock is not None and product.color_stocks:
         existing_color_stocks = [
             (item.color_id, item.stock)
             for item in product.color_stocks
         ]
-        _validate_color_stock_total(
-            total_stock=stock,
-            color_stock_pairs=existing_color_stocks,
-        )
+        if existing_color_stocks:
+            _validate_color_stock_total(
+                total_stock=stock,
+                color_stock_pairs=existing_color_stocks,
+            )
 
     if stock is not None:
         product.stock = stock

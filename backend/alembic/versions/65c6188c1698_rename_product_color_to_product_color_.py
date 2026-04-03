@@ -7,9 +7,9 @@ Create Date: 2026-04-03 08:37:27.129333
 """
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '65c6188c1698'
@@ -29,9 +29,18 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['color_id'], ['colors.id'], ),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('product_id', 'color_id', name='uq_product_color_stocks_product_color')
+    sa.UniqueConstraint(
+        'product_id',
+        'color_id',
+        name='uq_product_color_stocks_product_color',
     )
-    op.create_index(op.f('ix_product_color_stocks_id'), 'product_color_stocks', ['id'], unique=False)
+    )
+    op.create_index(
+        op.f('ix_product_color_stocks_id'),
+        'product_color_stocks',
+        ['id'],
+        unique=False,
+    )
     op.drop_table('product_colors')
     # ### end Alembic commands ###
 
@@ -42,8 +51,16 @@ def downgrade() -> None:
     op.create_table('product_colors',
     sa.Column('product_id', sa.INTEGER(), autoincrement=False, nullable=False),
     sa.Column('color_id', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.ForeignKeyConstraint(['color_id'], ['colors.id'], name='product_colors_color_id_fkey'),
-    sa.ForeignKeyConstraint(['product_id'], ['products.id'], name='product_colors_product_id_fkey'),
+    sa.ForeignKeyConstraint(
+        ['color_id'],
+        ['colors.id'],
+        name='product_colors_color_id_fkey',
+    ),
+    sa.ForeignKeyConstraint(
+        ['product_id'],
+        ['products.id'],
+        name='product_colors_product_id_fkey',
+    ),
     sa.PrimaryKeyConstraint('product_id', 'color_id', name='product_colors_pkey')
     )
     op.drop_index(op.f('ix_product_color_stocks_id'), table_name='product_color_stocks')
