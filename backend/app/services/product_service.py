@@ -33,6 +33,7 @@ def get_filtered_products(
     product_type: ProductType | None = None,
     min_price: float | None = None,
     max_price: float | None = None,
+    color_id: int | None = None,
 ) -> list[Product]:
     query = db.query(Product).options(
         joinedload(Product.category),
@@ -62,6 +63,12 @@ def get_filtered_products(
 
     if product_type is not None:
         query = query.filter(Product.product_type == product_type)
+
+    if color_id is not None:
+        color = db.query(Color).filter(Color.id == color_id).first()
+        if not color:
+            raise HTTPException(status_code=400, detail="Color not found")
+        query = query.filter(Product.colors.any(Color.id == color_id))
 
     return query.order_by(Product.id.asc()).all()
 

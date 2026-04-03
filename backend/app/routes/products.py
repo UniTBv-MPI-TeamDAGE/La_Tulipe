@@ -16,6 +16,7 @@ def get_products(
     search: str | None = Query(default=None, min_length=2),
     category: str | None = Query(default=None),
     product_type: ProductType | None = Query(default=None, alias="type"),
+    color_id: int | None = Query(default=None, alias="color"),
     min_price: float | None = Query(default=None, ge=0),
     max_price: float | None = Query(default=None, ge=0),
     db: Session = Depends(get_db),
@@ -33,6 +34,7 @@ def get_products(
         product_type=product_type,
         min_price=min_price,
         max_price=max_price,
+        color_id=color_id,
     )
 
 
