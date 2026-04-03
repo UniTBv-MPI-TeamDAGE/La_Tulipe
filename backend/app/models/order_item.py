@@ -15,9 +15,12 @@ class OrderItem(Base):
     )
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     product_name = Column(String, nullable=False)
+    color_id = Column(Integer, ForeignKey("colors.id"), nullable=True)
+    color_name = Column(String, nullable=True)
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Float, nullable=False)
     line_total = Column(Float, nullable=False)
 
     order = relationship("Order", back_populates="items")
     product = relationship("Product")
+    color = relationship("Color")

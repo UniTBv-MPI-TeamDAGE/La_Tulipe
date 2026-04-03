@@ -63,7 +63,7 @@ def create_product(
         is_featured=data.is_featured,
         season=data.season,
         product_type=data.product_type,
-        color_ids=data.color_ids,
+        color_stocks=[(item.color_id, item.stock) for item in data.color_stocks],
         category_id=data.category_id,
         db=db,
     )
@@ -86,7 +86,11 @@ def update_product(
         is_featured=data.is_featured,
         season=data.season,
         product_type=data.product_type,
-        color_ids=data.color_ids,
+        color_stocks=(
+            [(item.color_id, item.stock) for item in data.color_stocks]
+            if data.color_stocks is not None
+            else None
+        ),
         category_id=data.category_id,
         db=db,
     )

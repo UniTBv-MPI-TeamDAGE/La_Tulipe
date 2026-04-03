@@ -7,7 +7,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
-    Table,
+    UniqueConstraint,
 )
 from sqlalchemy import (
     Enum as SqlEnum,
@@ -30,12 +30,23 @@ class ProductSeason(str, Enum):
     WINTER = "winter"
 
 
-product_colors = Table(
-    "product_colors",
-    Base.metadata,
-    Column("product_id", Integer, ForeignKey("products.id"), primary_key=True),
-    Column("color_id", Integer, ForeignKey("colors.id"), primary_key=True),
-)
+class ProductColorStock(Base):
+    __tablename__ = "product_color_stocks"
+    __table_args__ = (
+        UniqueConstraint(
+            "product_id",
+            "color_id",
+            name="uq_product_color_stocks_product_color",
+        ),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False)
+    color_id = Column(Integer, ForeignKey("colors.id"), nullable=False)
+    stock = Column(Integer, default=0, nullable=False)
+
+    product = relationship("Product", back_populates="color_stocks")
+    color = relationship("Color", back_populates="product_stocks")
 
 
 class Product(Base):
@@ -61,4 +72,14 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
 
     category = relationship("Category", backref="products")
-    colors = relationship("Color", secondary=product_colors, back_populates="products")
+    color_stocks = relationship(
+        "ProductColorStock",
+        back_populates="product",
+        cascade="all, delete-orphan",
+    )
+    colors = relationship(
+        "Color",
+        secondary="product_color_stocks",
+        back_populates="products",
+        overlaps="color_stocks,product_stocks,product,color",
+    )

@@ -4,9 +4,10 @@ from uuid import uuid4
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 
+from app.models.color import Color
 from app.models.order import Order, OrderStatus
 from app.models.order_item import OrderItem
-from app.models.product import Product
+from app.models.product import Product, ProductColorStock
 from app.models.user import User
 from app.schemas.order import OrderCreate
 
@@ -20,11 +21,8 @@ def _generate_order_number() -> str:
 def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
     product_ids = [item.product_id for item in data.items]
 
-    aggregated_quantities: dict[int, int] = {}
-    for item in data.items:
-        aggregated_quantities[item.product_id] = (
-            aggregated_quantities.get(item.product_id, 0) + item.quantity
-        )
+    aggregated_default_stock: dict[int, int] = {}
+    aggregated_color_stock: dict[tuple[int, int], int] = {}
 
     products = (
         db.query(Product)
@@ -33,6 +31,24 @@ def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
         .all()
     )
     products_by_id = {product.id: product for product in products}
+
+    product_color_stocks = (
+        db.query(ProductColorStock)
+        .filter(ProductColorStock.product_id.in_(product_ids))
+        .with_for_update()
+        .all()
+    )
+    color_ids = sorted({item.color_id for item in product_color_stocks})
+    colors_by_id = {
+        color.id: color
+        for color in db.query(Color).filter(Color.id.in_(color_ids)).all()
+    }
+    color_stock_by_key = {
+        (item.product_id, item.color_id): item for item in product_color_stocks
+    }
+    has_color_stocks_by_product_id = {
+        item.product_id for item in product_color_stocks
+    }
 
     missing_product_ids = [
         product_id
@@ -45,14 +61,67 @@ def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
             detail=f"Invalid product ids: {missing_product_ids}",
         )
 
+    resolved_items: list[tuple[object, Product, ProductColorStock | None]] = []
+    for item in data.items:
+        product = products_by_id[item.product_id]
+
+        if product.id in has_color_stocks_by_product_id:
+            if item.color_id is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Color is required for product '{product.name}'",
+                )
+
+            color_stock = color_stock_by_key.get((product.id, item.color_id))
+            if not color_stock:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Invalid color '{item.color_id}' "
+                        f"for product '{product.name}'"
+                    ),
+                )
+
+            aggregated_color_stock[(product.id, item.color_id)] = (
+                aggregated_color_stock.get((product.id, item.color_id), 0)
+                + item.quantity
+            )
+            resolved_items.append((item, product, color_stock))
+        else:
+            if item.color_id is not None:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Product '{product.name}' does not support color-specific stock"
+                    ),
+                )
+
+            aggregated_default_stock[product.id] = (
+                aggregated_default_stock.get(product.id, 0) + item.quantity
+            )
+            resolved_items.append((item, product, None))
+
     insufficient_stock_items: list[str] = []
-    for product_id, needed_quantity in aggregated_quantities.items():
+
+    for product_id, needed_quantity in aggregated_default_stock.items():
         product = products_by_id[product_id]
         if product.stock < needed_quantity:
             insufficient_stock_items.append(
                 (
                     f"{product.name} (requested {needed_quantity}, "
                     f"available {product.stock})"
+                )
+            )
+
+    for (product_id, color_id), needed_quantity in aggregated_color_stock.items():
+        color_stock = color_stock_by_key[(product_id, color_id)]
+        color_name = colors_by_id.get(color_id).name if colors_by_id.get(color_id) else str(color_id)
+        product_name = products_by_id[product_id].name
+        if color_stock.stock < needed_quantity:
+            insufficient_stock_items.append(
+                (
+                    f"{product_name} - {color_name} "
+                    f"(requested {needed_quantity}, available {color_stock.stock})"
                 )
             )
 
@@ -78,8 +147,7 @@ def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
     )
 
     total_price = 0.0
-    for item in data.items:
-        product = products_by_id[item.product_id]
+    for item, product, color_stock in resolved_items:
         unit_price = product.price
         line_total = unit_price * item.quantity
 
@@ -87,6 +155,12 @@ def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
             OrderItem(
                 product_id=product.id,
                 product_name=product.name,
+                color_id=color_stock.color_id if color_stock else None,
+                color_name=(
+                    colors_by_id.get(color_stock.color_id).name
+                    if color_stock and colors_by_id.get(color_stock.color_id)
+                    else None
+                ),
                 quantity=item.quantity,
                 unit_price=unit_price,
                 line_total=line_total,
@@ -94,9 +168,13 @@ def create_order(data: OrderCreate, current_user: User, db: Session) -> Order:
         )
         total_price += line_total
 
-    for product_id, needed_quantity in aggregated_quantities.items():
+    for product_id, needed_quantity in aggregated_default_stock.items():
         product = products_by_id[product_id]
         product.stock -= needed_quantity
+
+    for (product_id, color_id), needed_quantity in aggregated_color_stock.items():
+        color_stock = color_stock_by_key[(product_id, color_id)]
+        color_stock.stock -= needed_quantity
 
     order.total_price = total_price
 
