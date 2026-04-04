@@ -5,6 +5,19 @@ from app.schemas.category import CategoryResponse
 from app.schemas.color import ColorResponse
 
 
+class ProductColorStockCreate(BaseModel):
+    color_id: int
+    stock: int = Field(ge=0)
+
+
+class ProductColorStockResponse(BaseModel):
+    color: ColorResponse
+    stock: int
+
+    class Config:
+        from_attributes = True
+
+
 class ProductResponse(BaseModel):
     id: int
     name: str
@@ -17,6 +30,7 @@ class ProductResponse(BaseModel):
     product_type: ProductType
     category: CategoryResponse
     colors: list[ColorResponse]
+    color_stocks: list[ProductColorStockResponse] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
@@ -31,7 +45,7 @@ class ProductCreate(BaseModel):
     is_featured: bool = False
     season: ProductSeason = ProductSeason.ALL_SEASON
     product_type: ProductType = ProductType.INDIVIDUAL
-    color_ids: list[int] = Field(default_factory=list)
+    color_stocks: list[ProductColorStockCreate] = Field(default_factory=list)
     category_id: int
 
 
@@ -44,5 +58,5 @@ class ProductUpdate(BaseModel):
     is_featured: bool | None = None
     season: ProductSeason | None = None
     product_type: ProductType | None = None
-    color_ids: list[int] | None = None
+    color_stocks: list[ProductColorStockCreate] | None = None
     category_id: int | None = None

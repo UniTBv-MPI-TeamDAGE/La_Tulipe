@@ -1,10 +1,22 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.bootstrap import ensure_default_admin
-from app.routes import auth, categories, orders, products, users
+from app.routes import auth, categories, colors, orders, products, users
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    ensure_default_admin()
+    yield
+    # Shutdown
+    pass
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
 	CORSMiddleware,
@@ -17,10 +29,9 @@ app.add_middleware(
 	allow_headers=["*"],
 )
 
-ensure_default_admin()
-
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(categories.router)
+app.include_router(colors.router)
 app.include_router(products.router)
 app.include_router(orders.router)
