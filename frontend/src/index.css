@@ -7,9 +7,13 @@
 html, body {
   margin: 0;
   padding: 0;
-
+  background: #ede8e0;
 }
 
 #root {
   padding-top: 64px;
+}
+
+#root:has(.authPage) {
+  padding-top: 0;
 }

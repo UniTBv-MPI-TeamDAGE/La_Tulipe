@@ -306,15 +306,24 @@ export default function AdminProducts() {
 
               <div className={styles.field}>
                 <label>Price (RON) *</label>
-                <input className={styles.input} type="number" min={0} step={0.5} value={form.price}
-                  onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))} />
-              </div>
+                <input
+                  className={styles.input}
+                  type="number"
+                  min={0}
+                  step={0.5}
+                  value={form.price || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
+                />              </div>
 
               <div className={styles.field}>
                 <label>Total stock</label>
-                <input className={styles.input} type="number" min={0} value={form.stock}
-                  onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))} />
-              </div>
+                <input
+                  className={styles.input}
+                  type="number"
+                  min={0}
+                  value={form.stock || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))}
+                /> </div>
 
               <div className={styles.field}>
                 <label>Type</label>
@@ -374,7 +383,7 @@ export default function AdminProducts() {
                             className={styles.colorStockInput}
                             type="number"
                             min={0}
-                            value={entry!.stock}
+                            value={entry!.stock || ""}
                             onChange={(e) => setColorStock(c.id, Number(e.target.value))}
                             placeholder="Stock"
                           />
