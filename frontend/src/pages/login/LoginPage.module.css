@@ -3,16 +3,22 @@
 
 .page {
   min-height: 100vh;
-  background-image: url('../../assets/background_log_reg.jpg');
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 32px 16px;
   font-family: 'Open Sans', sans-serif;
+  position: relative;
+}
+
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('../../assets/background_log_reg.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
 }
 
 .card {

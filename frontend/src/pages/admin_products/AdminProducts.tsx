@@ -20,6 +20,11 @@ const SEASONS = [
   { value: "winter", label: "Winter" },
 ];
 
+interface ColorStockEntry {
+  color_id: number;
+  stock: number;
+}
+
 const EMPTY_FORM = {
   name: "",
   description: "",
@@ -29,7 +34,7 @@ const EMPTY_FORM = {
   is_featured: false,
   season: "all_season",
   product_type: "individual",
-  color_ids: [] as number[],
+  color_stocks: [] as ColorStockEntry[],
   category_id: 0,
 };
 
@@ -89,7 +94,10 @@ export default function AdminProducts() {
       is_featured: product.is_featured,
       season: product.season,
       product_type: product.product_type,
-      color_ids: product.colors.map((c: any) => c.id),
+      color_stocks: product.color_stocks.map((cs: any) => ({
+        color_id: cs.color.id,
+        stock: cs.stock,
+      })),
       category_id: product.category.id,
     });
     setFormError(null);
@@ -102,15 +110,43 @@ export default function AdminProducts() {
     setFormError(null);
   }
 
+  function toggleColor(colorId: number) {
+    setForm((prev) => {
+      const exists = prev.color_stocks.find((cs) => cs.color_id === colorId);
+      if (exists) {
+        return { ...prev, color_stocks: prev.color_stocks.filter((cs) => cs.color_id !== colorId) };
+      }
+      return { ...prev, color_stocks: [...prev.color_stocks, { color_id: colorId, stock: 0 }] };
+    });
+  }
+
+  function setColorStock(colorId: number, stock: number) {
+    setForm((prev) => ({
+      ...prev,
+      color_stocks: prev.color_stocks.map((cs) =>
+        cs.color_id === colorId ? { ...cs, stock } : cs
+      ),
+    }));
+  }
+
   async function handleSubmit() {
     if (!form.name.trim()) { setFormError("Name is required."); return; }
     if (form.price <= 0) { setFormError("Price must be greater than 0."); return; }
     if (form.category_id === 0) { setFormError("Please select a category."); return; }
 
+    const totalColorStock = form.color_stocks.reduce((s, cs) => s + cs.stock, 0);
+    if (form.color_stocks.length > 0 && totalColorStock > form.stock) {
+      setFormError(`Sum of color stocks (${totalColorStock}) exceeds total stock (${form.stock}).`);
+      return;
+    }
+
     setSubmitting(true);
     setFormError(null);
     try {
-      const payload = { ...form, image_url: form.image_url?.trim() || null };
+      const payload = {
+        ...form,
+        image_url: form.image_url?.trim() || null,
+      };
       if (editingId !== null) {
         await updateProduct(editingId, payload);
       } else {
@@ -147,15 +183,6 @@ export default function AdminProducts() {
     } finally {
       setAddingCategory(false);
     }
-  }
-
-  function toggleColor(colorId: number) {
-    setForm((prev) => ({
-      ...prev,
-      color_ids: prev.color_ids.includes(colorId)
-        ? prev.color_ids.filter((id) => id !== colorId)
-        : [...prev.color_ids, colorId],
-    }));
   }
 
   if (!isAdmin) return null;
@@ -231,6 +258,9 @@ export default function AdminProducts() {
                   <td>{p.price.toFixed(2)} RON</td>
                   <td>
                     <span className={p.stock === 0 ? styles.stockOut : styles.stockOk}>{p.stock}</span>
+                    {p.color_stocks?.length > 0 && (
+                      <span className={styles.colorStockHint}> ({p.color_stocks.length} colors)</span>
+                    )}
                   </td>
                   <td>{p.is_featured ? "✓" : "—"}</td>
                   <td className={styles.tdActions}>
@@ -281,7 +311,7 @@ export default function AdminProducts() {
               </div>
 
               <div className={styles.field}>
-                <label>Stock</label>
+                <label>Total stock</label>
                 <input className={styles.input} type="number" min={0} value={form.stock}
                   onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))} />
               </div>
@@ -320,17 +350,44 @@ export default function AdminProducts() {
               </div>
 
               <div className={`${styles.field} ${styles.fieldFull}`}>
-                <label>Colors</label>
-                <div className={styles.colorPicker}>
-                  {colors.map((c: any) => (
-                    <button key={c.id} type="button"
-                      className={`${styles.colorOption} ${form.color_ids.includes(c.id) ? styles.colorSelected : ""}`}
-                      onClick={() => toggleColor(c.id)} title={c.name}>
-                      <span className={styles.colorSwatch} style={{ background: c.hex_code ?? "#ccc" }} />
-                      {c.name}
-                    </button>
-                  ))}
+                <label>Colors & stock per color <span className={styles.labelHint}>(optional — leave empty to use total stock)</span></label>
+                <div className={styles.colorStockGrid}>
+                  {colors.map((c: any) => {
+                    const entry = form.color_stocks.find((cs) => cs.color_id === c.id);
+                    const checked = !!entry;
+                    return (
+                      <div key={c.id} className={`${styles.colorStockRow} ${checked ? styles.colorStockRowActive : ""}`}>
+                        <label className={styles.colorStockLabel}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleColor(c.id)}
+                          />
+                          <span
+                            className={styles.colorSwatch}
+                            style={{ background: c.hex_code ?? "#ccc" }}
+                          />
+                          {c.name}
+                        </label>
+                        {checked && (
+                          <input
+                            className={styles.colorStockInput}
+                            type="number"
+                            min={0}
+                            value={entry!.stock}
+                            onChange={(e) => setColorStock(c.id, Number(e.target.value))}
+                            placeholder="Stock"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
+                {form.color_stocks.length > 0 && (
+                  <p className={styles.colorStockTotal}>
+                    Color total: {form.color_stocks.reduce((s, cs) => s + cs.stock, 0)} / {form.stock}
+                  </p>
+                )}
               </div>
 
               <div className={`${styles.field} ${styles.fieldFull}`}>

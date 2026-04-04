@@ -11,6 +11,7 @@ export async function getProducts(filters: {
   type?: string;
   min_price?: string;
   max_price?: string;
+  color_id?: string | number;
 } = {}) {
   const params = new URLSearchParams();
   if (filters.search && filters.search.length >= 2) params.set("search", filters.search);
@@ -18,6 +19,7 @@ export async function getProducts(filters: {
   if (filters.type) params.set("type", filters.type);
   if (filters.min_price) params.set("min_price", filters.min_price);
   if (filters.max_price) params.set("max_price", filters.max_price);
+  if (filters.color_id) params.set("color", String(filters.color_id));
   const qs = params.toString();
   const res = await fetch(`${BASE}/api/products${qs ? `?${qs}` : ""}`);
   if (!res.ok) throw new Error("Failed to load products");
@@ -62,7 +64,7 @@ export async function createProduct(data: {
   is_featured: boolean;
   season: string;
   product_type: string;
-  color_ids: number[];
+  color_stocks: { color_id: number; stock: number }[];
   category_id: number;
 }) {
   const res = await fetch(`${BASE}/api/products`, {
@@ -86,7 +88,7 @@ export async function updateProduct(id: number, data: {
   is_featured?: boolean;
   season?: string;
   product_type?: string;
-  color_ids?: number[];
+  color_stocks?: { color_id: number; stock: number }[];
   category_id?: number;
 }) {
   const res = await fetch(`${BASE}/api/products/${id}`, {

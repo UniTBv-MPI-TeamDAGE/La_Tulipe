@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "../../../context/CartContext";
+import { useCart, makeCartKey } from "../../../context/CartContext";
 import styles from "./ProductCard.module.css";
 
 interface Props {
@@ -12,15 +12,20 @@ export default function ProductCard({ product }: Props) {
   const { items, addProduct } = useCart();
   const [justAdded, setJustAdded] = useState(false);
 
-  const cartItem = items.find(
-    (i) => i.type === "product" && i.product.id === product.id
-  );
+  const hasColorVariants = product.color_stocks?.length > 0;
+
+  const cartKey = makeCartKey(product.id);
+  const cartItem = items.find((i) => i.type === "product" && i.cartKey === cartKey);
   const cartQty = cartItem?.type === "product" ? cartItem.quantity : 0;
   const outOfStock = product.stock === 0;
-  const atMax = cartQty >= product.stock;
+  const atMax = !hasColorVariants && cartQty >= product.stock;
 
   function handleAdd(e: React.MouseEvent) {
     e.stopPropagation();
+    if (hasColorVariants) {
+      navigate(`/products/${product.id}`);
+      return;
+    }
     if (outOfStock || atMax) return;
     addProduct(product, 1);
     setJustAdded(true);
@@ -58,9 +63,15 @@ export default function ProductCard({ product }: Props) {
         <button
           className={`${styles.addBtn} ${justAdded ? styles.addBtnDone : ""}`}
           onClick={handleAdd}
-          disabled={outOfStock || atMax}
+          disabled={!hasColorVariants && (outOfStock || atMax)}
         >
-          {justAdded ? "✓ Added!" : atMax ? "Max reached" : "Add to cart"}
+          {hasColorVariants
+            ? "Choose color →"
+            : justAdded
+            ? "✓ Added!"
+            : atMax
+            ? "Max reached"
+            : "Add to cart"}
         </button>
       </div>
     </article>
