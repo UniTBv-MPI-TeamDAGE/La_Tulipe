@@ -5,13 +5,20 @@ function authHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+export interface OrderItemPayload {
+  product_id: number | null;
+  quantity: number;
+  color_id?: number;
+  custom_composition?: { product_id: number; quantity: number }[];
+}
+
 export async function createOrder(data: {
   customer_name: string;
   customer_email: string;
   customer_phone: string;
   delivery_address: string;
   card_message?: string | null;
-  items: { product_id: number; quantity: number }[];
+  items: OrderItemPayload[];
 }) {
   const res = await fetch(`${BASE}/api/orders`, {
     method: "POST",

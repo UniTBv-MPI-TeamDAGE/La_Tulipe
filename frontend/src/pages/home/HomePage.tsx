@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getProducts, getFeaturedProducts, getCategories } from "../../services/productService";
+import { getProducts, getFeaturedProducts, getCategories, getColors } from "../../services/productService";
 import ProductCard from "../../components/shared/product_card/ProductCard";
 import styles from "./HomePage.module.css";
 
@@ -9,12 +9,14 @@ export default function HomePage() {
 
   const urlSearch = searchParams.get("search") ?? "";
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "");
+  const [selectedColorId, setSelectedColorId] = useState(searchParams.get("color") ?? "");
   const [minPrice, setMinPrice] = useState(searchParams.get("min_price") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("max_price") ?? "");
 
   const [products, setProducts] = useState<any[]>([]);
   const [featured, setFeatured] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [colors, setColors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,6 +24,7 @@ export default function HomePage() {
 
   useEffect(() => {
     getCategories().then(setCategories).catch(() => {});
+    getColors().then(setColors).catch(() => {});
     getFeaturedProducts().then(setFeatured).catch(() => {});
   }, []);
 
@@ -34,6 +37,7 @@ export default function HomePage() {
         category: selectedCategory,
         min_price: minPrice,
         max_price: maxPrice,
+        color_id: selectedColorId,
       });
       setProducts(data);
     } catch (err: any) {
@@ -41,7 +45,7 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  }, [urlSearch, selectedCategory, minPrice, maxPrice]);
+  }, [urlSearch, selectedCategory, minPrice, maxPrice, selectedColorId]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -49,10 +53,11 @@ export default function HomePage() {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [fetchProducts]);
 
-  const hasFilters = urlSearch.length >= 2 || selectedCategory || minPrice || maxPrice;
+  const hasFilters = urlSearch.length >= 2 || selectedCategory || minPrice || maxPrice || selectedColorId;
 
   function resetFilters() {
     setSelectedCategory("");
+    setSelectedColorId("");
     setMinPrice("");
     setMaxPrice("");
     setSearchParams({});
@@ -63,6 +68,18 @@ export default function HomePage() {
     const next = new URLSearchParams(searchParams);
     if (val) next.set("category", val);
     else next.delete("category");
+    setSearchParams(next);
+  }
+
+  function handleColorToggle(colorId: string) {
+    const next = new URLSearchParams(searchParams);
+    if (selectedColorId === colorId) {
+      setSelectedColorId("");
+      next.delete("color");
+    } else {
+      setSelectedColorId(colorId);
+      next.set("color", colorId);
+    }
     setSearchParams(next);
   }
 
@@ -113,6 +130,26 @@ export default function HomePage() {
           </button>
         )}
       </section>
+
+      {colors.length > 0 && (
+        <section className={styles.colorFilterBar}>
+          <span className={styles.colorFilterLabel}>Colors:</span>
+          {colors.map((c: any) => (
+            <button
+              key={c.id}
+              className={`${styles.colorFilterBtn} ${selectedColorId === String(c.id) ? styles.colorFilterBtnActive : ""}`}
+              onClick={() => handleColorToggle(String(c.id))}
+              title={c.name}
+            >
+              <span
+                className={styles.colorFilterDot}
+                style={{ background: c.hex_code ?? "#ccc" }}
+              />
+              <span className={styles.colorFilterName}>{c.name}</span>
+            </button>
+          ))}
+        </section>
+      )}
 
       {!hasFilters && featured.length > 0 && (
         <section className={styles.section}>
