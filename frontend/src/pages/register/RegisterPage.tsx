@@ -85,104 +85,106 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.logoFixed}>
-      <img src={logo} alt="La Tulipe" />
-    </div>
-      <div className={styles.card}>
-        <form onSubmit={handleSubmit} noValidate className={styles.form}>
-          {errors.general && (
-            <div className={styles.errorBanner} role="alert">{errors.general}</div>
-          )}
+    <div className="authPage">
+      <main className={styles.page}>
+        <div className={styles.logoFixed}>
+          <img src={logo} alt="La Tulipe" />
+        </div>
+        <div className={styles.card}>
+          <form onSubmit={handleSubmit} noValidate className={styles.form}>
+            {errors.general && (
+              <div className={styles.errorBanner} role="alert">{errors.general}</div>
+            )}
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="reg-name">Full name</label>
-            <input id="reg-name" name="name" type="text" autoComplete="name"
-              value={form.name} onChange={handleChange} placeholder="Ana Popescu"
-              className={`${styles.input} ${errors.name ? styles.inputError : ""}`} />
-            {errors.name && <span className={styles.fieldError} role="alert">{errors.name}</span>}
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="reg-email">Email adress</label>
-            <input id="reg-email" name="email" type="email" autoComplete="email"
-              value={form.email} onChange={handleChange} placeholder="ana@example.com"
-              className={`${styles.input} ${errors.email ? styles.inputError : ""}`} />
-            {errors.email && <span className={styles.fieldError} role="alert">{errors.email}</span>}
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="reg-phone">
-              Phone <span className={styles.optional}>(optional)</span>
-            </label>
-            <input id="reg-phone" name="phone" type="tel" autoComplete="tel"
-              value={form.phone} onChange={handleChange} placeholder="07xx xxx xxx"
-              className={styles.input} />
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="reg-role">Account type</label>
-            <select
-              id="reg-role"
-              name="role"
-              value={form.role}
-              onChange={(e) => {
-                setForm((prev) => ({ ...prev, role: e.target.value as "customer" | "admin", admin_code: "" }));
-                setErrors((prev) => ({ ...prev, admin_code: undefined }));
-              }}
-              className={styles.input}
-            >
-              <option value="customer">Customer</option>
-              <option value="admin">Administrator</option>
-            </select>
-          </div>
-
-          {form.role === "admin" && (
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="reg-admincode">Admin secret code</label>
-              <input
-                id="reg-admincode"
-                name="admin_code"
-                type="password"
-                value={form.admin_code}
-                onChange={handleChange}
-                placeholder="Enter admin code"
-                className={`${styles.input} ${errors.admin_code ? styles.inputError : ""}`}
-              />
-              {errors.admin_code && (
-                <span className={styles.fieldError} role="alert">{errors.admin_code}</span>
-              )}
-            </div>
-          )}
-
-          <div className={styles.row}>
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="reg-password">Password</label>
-              <input id="reg-password" name="password" type="password" autoComplete="new-password"
-                value={form.password} onChange={handleChange} placeholder="Min. 8 characters"
-                className={`${styles.input} ${errors.password ? styles.inputError : ""}`} />
-              {errors.password && <span className={styles.fieldError} role="alert">{errors.password}</span>}
+              <label className={styles.label} htmlFor="reg-name">Full name</label>
+              <input id="reg-name" name="name" type="text" autoComplete="name"
+                value={form.name} onChange={handleChange} placeholder="Ana Popescu"
+                className={`${styles.input} ${errors.name ? styles.inputError : ""}`} />
+              {errors.name && <span className={styles.fieldError} role="alert">{errors.name}</span>}
             </div>
 
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="reg-confirm">Confirmation</label>
-              <input id="reg-confirm" name="confirm_password" type="password" autoComplete="new-password"
-                value={form.confirm_password} onChange={handleChange} placeholder="Re-enter password "
-                className={`${styles.input} ${errors.confirm_password ? styles.inputError : ""}`} />
-              {errors.confirm_password && <span className={styles.fieldError} role="alert">{errors.confirm_password}</span>}
+              <label className={styles.label} htmlFor="reg-email">Email adress</label>
+              <input id="reg-email" name="email" type="email" autoComplete="email"
+                value={form.email} onChange={handleChange} placeholder="ana@example.com"
+                className={`${styles.input} ${errors.email ? styles.inputError : ""}`} />
+              {errors.email && <span className={styles.fieldError} role="alert">{errors.email}</span>}
             </div>
-          </div>
 
-          <button type="submit" className={styles.btnPrimary} disabled={loading}>
-            {loading ? <><span className={styles.spinner} /> Processing...</> : "Register"}
-          </button>
-        </form>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="reg-phone">
+                Phone <span className={styles.optional}>(optional)</span>
+              </label>
+              <input id="reg-phone" name="phone" type="tel" autoComplete="tel"
+                value={form.phone} onChange={handleChange} placeholder="07xx xxx xxx"
+                className={styles.input} />
+            </div>
 
-        <p className={styles.footer}>
-          Already have an account?{" "}
-          <Link to="/login" className={styles.link}>Login</Link>
-        </p>
-      </div>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="reg-role">Account type</label>
+              <select
+                id="reg-role"
+                name="role"
+                value={form.role}
+                onChange={(e) => {
+                  setForm((prev) => ({ ...prev, role: e.target.value as "customer" | "admin", admin_code: "" }));
+                  setErrors((prev) => ({ ...prev, admin_code: undefined }));
+                }}
+                className={styles.input}
+              >
+                <option value="customer">Customer</option>
+                <option value="admin">Administrator</option>
+              </select>
+            </div>
+
+            {form.role === "admin" && (
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="reg-admincode">Admin secret code</label>
+                <input
+                  id="reg-admincode"
+                  name="admin_code"
+                  type="password"
+                  value={form.admin_code}
+                  onChange={handleChange}
+                  placeholder="Enter admin code"
+                  className={`${styles.input} ${errors.admin_code ? styles.inputError : ""}`}
+                />
+                {errors.admin_code && (
+                  <span className={styles.fieldError} role="alert">{errors.admin_code}</span>
+                )}
+              </div>
+            )}
+
+            <div className={styles.row}>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="reg-password">Password</label>
+                <input id="reg-password" name="password" type="password" autoComplete="new-password"
+                  value={form.password} onChange={handleChange} placeholder="Min. 8 characters"
+                  className={`${styles.input} ${errors.password ? styles.inputError : ""}`} />
+                {errors.password && <span className={styles.fieldError} role="alert">{errors.password}</span>}
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="reg-confirm">Confirmation</label>
+                <input id="reg-confirm" name="confirm_password" type="password" autoComplete="new-password"
+                  value={form.confirm_password} onChange={handleChange} placeholder="Re-enter password "
+                  className={`${styles.input} ${errors.confirm_password ? styles.inputError : ""}`} />
+                {errors.confirm_password && <span className={styles.fieldError} role="alert">{errors.confirm_password}</span>}
+              </div>
+            </div>
+
+            <button type="submit" className={styles.btnPrimary} disabled={loading}>
+              {loading ? <><span className={styles.spinner} /> Processing...</> : "Register"}
+            </button>
+          </form>
+
+          <p className={styles.footer}>
+            Already have an account?{" "}
+            <Link to="/login" className={styles.link}>Login</Link>
+          </p>
+        </div>
+      </main>
     </div>
   );
 }

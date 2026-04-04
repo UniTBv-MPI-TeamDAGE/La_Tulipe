@@ -22,8 +22,11 @@
   flex-shrink: 0;
 }
 .image {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
   transition: transform 0.4s ease;
 }
 .card:hover .image { transform: scale(1.05); }

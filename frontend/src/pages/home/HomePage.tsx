@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { getProducts, getFeaturedProducts, getCategories, getColors } from "../../services/productService";
 import ProductCard from "../../components/shared/product_card/ProductCard";
 import styles from "./HomePage.module.css";
+import heroImg from "../../assets/photo_homepage_2.png";
 
 export default function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -87,8 +88,7 @@ export default function HomePage() {
     <main className={styles.page}>
       {!hasFilters && (
         <section className={styles.hero}>
-          <h1 className={styles.heroTitle}>La Tulipe</h1>
-          <p className={styles.heroSub}>Fresh flowers, delivered with care</p>
+          <img src={heroImg} alt="La Tulipe" className={styles.heroImg} />
         </section>
       )}
 
