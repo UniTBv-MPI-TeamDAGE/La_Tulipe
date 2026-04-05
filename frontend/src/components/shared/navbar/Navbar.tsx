@@ -79,6 +79,9 @@ export default function Navbar() {
               <Link to="/profile" className={styles.navLink}>
                 👤 {user.name}
               </Link>
+              <Link to="/profile/orders" className={styles.navLink}>
+                📦 My orders
+              </Link>
               <button className={styles.logoutBtn} onClick={handleLogout}>
                 Sign out
               </button>
@@ -129,6 +132,9 @@ export default function Navbar() {
             <>
               <Link to="/profile" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
                 👤 {user.name}
+              </Link>
+              <Link to="/profile/orders" className={styles.navLink}>
+                📦 My orders
               </Link>
               <button className={styles.mobileLogout} onClick={handleLogout}>
                 Sign out

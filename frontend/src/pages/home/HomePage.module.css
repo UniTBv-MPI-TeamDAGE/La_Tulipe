@@ -5,25 +5,18 @@
 }
 
 .hero {
-  text-align: center;
-  padding: 72px 20px 52px;
-  background: linear-gradient(135deg, #f5f1e8 0%, #e6d4cb 60%, #f5f1e8 100%);
   border-radius: 20px;
   margin: 28px 0 32px;
+  overflow: hidden;
+  height: 300px;
 }
 
-.heroTitle {
-  font-size: 3.5rem;
-  font-weight: 800;
-  color: #d4888c;
-  margin: 0;
-  letter-spacing: -0.04em;
-}
-
-.heroSub {
-  margin: 10px 0 0;
-  color: #74867a;
-  font-size: 1.1rem;
+.heroImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 50%;
+  display: block;
 }
 
 .filterBar {

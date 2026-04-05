@@ -18,7 +18,7 @@ interface BouquetCartItem {
   type: "bouquet";
   id: string;
   label: string;
-  flowers: { product: any; quantity: number }[];
+  flowers: { product: any; quantity: number; colorId?: number; colorName?: string }[];
   totalPrice: number;
 }
 
@@ -155,7 +155,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) dispatch({ type: "HYDRATE", items: JSON.parse(raw) });
     } catch {
-      //
     }
   }, []);
 
@@ -187,27 +186,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, 0);
 
   const toOrderItems = (): OrderItemPayload[] => {
-    const result: OrderItemPayload[] = [];
-    for (const item of state.items) {
-      if (item.type === "product") {
-        result.push({
-          product_id: item.product.id,
-          quantity: item.quantity,
-          ...(item.selectedColor ? { color_id: item.selectedColor.id } : {}),
-        });
-      } else {
-        result.push({
-          product_id: null,
-          quantity: 1,
-          custom_composition: item.flowers.map((f) => ({
-            product_id: f.product.id,
-            quantity: f.quantity,
-          })),
-        });
-      }
+  const result: OrderItemPayload[] = [];
+  for (const item of state.items) {
+    if (item.type === "product") {
+      result.push({
+        product_id: item.product.id,
+        quantity: item.quantity,
+        ...(item.selectedColor ? { color_id: item.selectedColor.id } : {}),
+      });
+    } else {
+      result.push({
+        product_id: null,
+        quantity: 1,
+        custom_composition: item.flowers.map((f: any) => ({
+          product_id: f.product.id,
+          quantity: f.quantity,
+          ...(f.colorId ? { color_id: f.colorId } : {}),
+        })),
+      });
     }
-    return result;
-  };
+  }
+  return result;
+};
 
   return (
     <CartContext.Provider
