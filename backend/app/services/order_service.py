@@ -328,3 +328,64 @@ def get_my_order_or_404(order_id: int, current_user: User, db: Session) -> Order
         raise HTTPException(status_code=404, detail="Order not found")
 
     return order
+
+
+ALLOWED_STATUS_TRANSITIONS: dict[OrderStatus, set[OrderStatus]] = {
+    OrderStatus.PENDING: {OrderStatus.CONFIRMED, OrderStatus.CANCELLED},
+    OrderStatus.CONFIRMED: {OrderStatus.DELIVERED, OrderStatus.CANCELLED},
+    OrderStatus.DELIVERED: {OrderStatus.CANCELLED},
+    OrderStatus.CANCELLED: set(),
+}
+
+
+def get_all_orders_for_admin(
+    *,
+    db: Session,
+    status: OrderStatus | None = None,
+) -> list[Order]:
+    query = db.query(Order).options(joinedload(Order.items))
+    if status is not None:
+        query = query.filter(Order.status == status)
+
+    return query.order_by(Order.created_at.desc(), Order.id.desc()).all()
+
+
+def update_order_status_for_admin(
+    *,
+    order_id: int,
+    new_status: OrderStatus,
+    db: Session,
+) -> Order:
+    order = (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .filter(Order.id == order_id)
+        .first()
+    )
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    if order.status == new_status:
+        return order
+
+    allowed_next_statuses = ALLOWED_STATUS_TRANSITIONS.get(order.status, set())
+    if new_status not in allowed_next_statuses:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Invalid status transition: "
+                f"{order.status.value} -> {new_status.value}"
+            ),
+        )
+
+    order.status = new_status
+    db.add(order)
+    db.commit()
+    db.refresh(order)
+
+    return (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .filter(Order.id == order.id)
+        .first()
+    )

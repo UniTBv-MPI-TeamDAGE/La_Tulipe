@@ -355,6 +355,47 @@ def update_product(
     )
 
 
+def update_product_stock(
+    *,
+    product_id: int,
+    stock: int,
+    db: Session,
+) -> Product:
+    if stock < 0:
+        raise HTTPException(status_code=400, detail="Stock cannot be negative")
+
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    if product.color_stocks:
+        existing_color_stocks = [
+            (item.color_id, item.stock)
+            for item in product.color_stocks
+        ]
+        _validate_color_stock_total(
+            total_stock=stock,
+            color_stock_pairs=existing_color_stocks,
+        )
+
+    product.stock = stock
+
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+
+    return (
+        db.query(Product)
+        .options(
+            joinedload(Product.category),
+            joinedload(Product.colors),
+            joinedload(Product.color_stocks).joinedload(ProductColorStock.color),
+        )
+        .filter(Product.id == product.id)
+        .first()
+    )
+
+
 def delete_product(product_id: int, db: Session) -> None:
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:

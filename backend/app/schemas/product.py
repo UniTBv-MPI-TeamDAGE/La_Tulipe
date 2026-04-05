@@ -60,3 +60,7 @@ class ProductUpdate(BaseModel):
     product_type: ProductType | None = None
     color_stocks: list[ProductColorStockCreate] | None = None
     category_id: int | None = None
+
+
+class ProductStockUpdate(BaseModel):
+    stock: int

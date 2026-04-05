@@ -5,7 +5,12 @@ from app.database.db import get_db
 from app.middleware.auth import get_current_admin
 from app.models.product import ProductType
 from app.models.user import User
-from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from app.schemas.product import (
+    ProductCreate,
+    ProductResponse,
+    ProductStockUpdate,
+    ProductUpdate,
+)
 from app.services import product_service
 
 router = APIRouter(prefix="/api/products", tags=["products"])
@@ -92,6 +97,20 @@ def update_product(
             else None
         ),
         category_id=data.category_id,
+        db=db,
+    )
+
+
+@router.patch("/{product_id}/stock", response_model=ProductResponse)
+def update_product_stock(
+    product_id: int,
+    data: ProductStockUpdate,
+    current_user: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+):
+    return product_service.update_product_stock(
+        product_id=product_id,
+        stock=data.stock,
         db=db,
     )
 
