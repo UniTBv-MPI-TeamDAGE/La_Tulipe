@@ -356,7 +356,12 @@ def update_order_status_for_admin(
     new_status: OrderStatus,
     db: Session,
 ) -> Order:
-    order = db.query(Order).options(joinedload(Order.items)).filter(Order.id == order_id).first()
+    order = (
+        db.query(Order)
+        .options(joinedload(Order.items))
+        .filter(Order.id == order_id)
+        .first()
+    )
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
@@ -367,7 +372,10 @@ def update_order_status_for_admin(
     if new_status not in allowed_next_statuses:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid status transition: {order.status.value} -> {new_status.value}",
+            detail=(
+                "Invalid status transition: "
+                f"{order.status.value} -> {new_status.value}"
+            ),
         )
 
     order.status = new_status
