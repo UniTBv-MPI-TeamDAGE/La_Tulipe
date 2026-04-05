@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import styles from "./Footer.module.css";
+import logo from "../../../assets/logo_flower.png";
 
 export default function Footer() {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.brand}>
-          <p className={styles.brandName}>La Tulipe</p>
-          <p className={styles.brandTagline}>Fresh flowers, delivered with care</p>
-        </div>
+  <img src={logo} alt="La Tulipe" className={styles.brandLogo} />
+</div>
 
         <div className={styles.col}>
           <p className={styles.colTitle}>Shop</p>
@@ -19,7 +19,7 @@ export default function Footer() {
         <div className={styles.col}>
           <p className={styles.colTitle}>Account</p>
           <Link to="/profile" className={styles.colLink}>My profile</Link>
-          <Link to="/profile/orders" className={styles.colLink}>My orders</Link>
+          <Link to="/orders" className={styles.colLink}>My orders</Link>
         </div>
 
         <div className={styles.col}>

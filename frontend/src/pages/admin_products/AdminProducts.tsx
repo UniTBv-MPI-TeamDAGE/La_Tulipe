@@ -8,6 +8,7 @@ import {
   updateProduct,
   deleteProduct,
   createCategory,
+  updateProductStock,
 } from "../../services/productService";
 import styles from "./AdminProducts.module.css";
 import { useAuth } from "../../context/AuthContext";
@@ -51,6 +52,7 @@ export default function AdminProducts() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [editingStock, setEditingStock] = useState<{ id: number; value: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -171,6 +173,20 @@ export default function AdminProducts() {
     }
   }
 
+  async function handleStockCommit(productId: number) {
+    const current = editingStock;
+    if (!current || current.id !== productId) return;
+    const stock = parseInt(current.value, 10);
+    setEditingStock(null);
+    if (isNaN(stock) || stock < 0) return;
+    try {
+      await updateProductStock(productId, stock);
+      await loadAll();
+    } catch (err: any) {
+      alert(err.message ?? "Failed to update stock.");
+    }
+  }
+
   async function handleAddCategory() {
     if (!newCategoryName.trim()) return;
     setAddingCategory(true);
@@ -257,10 +273,19 @@ export default function AdminProducts() {
                   </td>
                   <td>{p.price.toFixed(2)} RON</td>
                   <td>
-                    <span className={p.stock === 0 ? styles.stockOut : styles.stockOk}>{p.stock}</span>
-                    {p.color_stocks?.length > 0 && (
-                      <span className={styles.colorStockHint}> ({p.color_stocks.length} colors)</span>
-                    )}
+                    <input
+                      className={styles.stockInput}
+                      type="number"
+                      min={0}
+                      value={editingStock !== null && editingStock.id === p.id ? editingStock.value : p.stock}
+                      onChange={(e) => setEditingStock({ id: p.id, value: e.target.value })}
+                      onFocus={() => setEditingStock({ id: p.id, value: String(p.stock) })}
+                      onBlur={() => handleStockCommit(p.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleStockCommit(p.id);
+                        if (e.key === "Escape") setEditingStock(null);
+                      }}
+                    />
                   </td>
                   <td>{p.is_featured ? "✓" : "—"}</td>
                   <td className={styles.tdActions}>

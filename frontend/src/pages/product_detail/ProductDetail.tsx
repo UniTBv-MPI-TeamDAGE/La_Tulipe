@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "../../services/productService";
 import { useCart, makeCartKey, type SelectedColor } from "../../context/CartContext";
+import { useToast } from "../../context/ToastContext";
 import styles from "./ProductDetail.module.css";
 
 const SEASON_LABEL: Record<string, string> = {
@@ -16,6 +17,7 @@ export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { items, addProduct } = useCart();
+  const { showToast } = useToast();
 
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -63,6 +65,7 @@ export default function ProductDetail() {
   function handleAdd() {
     if (addDisabled || quantity > remaining) return;
     addProduct(product, quantity, selectedColor);
+    showToast("Added to cart!");
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
   }

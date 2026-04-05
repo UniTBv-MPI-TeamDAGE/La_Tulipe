@@ -13,7 +13,9 @@ import AdminProducts from "./pages/admin_products/AdminProducts";
 import CartPage from "./pages/cart/CartPage";
 import CheckoutPage from "./pages/checkout/CheckoutPage";
 import OrdersPage from "./pages/orders/OrdersPage";
+import AdminOrders from "./pages/admin_orders/AdminOrders";
 import type { ReactNode } from "react";
+import { ToastProvider } from "./context/ToastContext";
 
 function PrivateRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -47,9 +49,11 @@ function AppShell() {
           <Route path="/cart" element={<PrivateRoute><CartPage /></PrivateRoute>} />
           <Route path="/checkout" element={<PrivateRoute><CheckoutPage /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-          <Route path="/profile/orders" element={<PrivateRoute><OrdersPage /></PrivateRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminProducts /></AdminRoute>} />
           <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+          <Route path="/orders" element={<PrivateRoute><OrdersPage /></PrivateRoute>} />
+          <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+          
         </Routes>
       </div>
       <Footer />
@@ -61,9 +65,11 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <CartProvider>
-          <AppShell />
-        </CartProvider>
+        <ToastProvider>
+          <CartProvider>
+            <AppShell />
+          </CartProvider>
+        </ToastProvider>
       </BrowserRouter>
     </AuthProvider>
   );

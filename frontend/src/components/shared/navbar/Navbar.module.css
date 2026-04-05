@@ -152,6 +152,8 @@
 }
 .loginBtn:hover { background: #5c6b60; }
 
+.adminLinks { display: flex; gap: 8px; }
+
 .hamburger {
   display: none;
   flex-direction: column;

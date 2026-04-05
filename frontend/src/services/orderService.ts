@@ -59,3 +59,25 @@ export async function getMyOrderById(id: number) {
   if (!res.ok) throw new Error("Failed to load order");
   return res.json();
 }
+
+export async function getAllOrdersForAdmin(status?: string) {
+  const params = status ? `?status=${status}` : "";
+  const res = await fetch(`${BASE}/api/admin/orders${params}`, {
+    headers: authHeader(),
+  });
+  if (!res.ok) throw new Error("Failed to load orders");
+  return res.json();
+}
+
+export async function updateOrderStatus(orderId: number, status: string) {
+  const res = await fetch(`${BASE}/api/orders/${orderId}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeader() },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail ?? "Failed to update status");
+  }
+  return res.json();
+}
