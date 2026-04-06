@@ -196,8 +196,25 @@
   font-size: 0.9rem;
 }
 
-.table th { background: #f5f1e8; padding: 12px 16px; text-align: center; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #74867a; border-bottom: 1.5px solid #e6d4cb; }
-.table td { padding: 12px 16px; border-bottom: 1px solid #f5f1e8; color: #444; vertical-align: middle; text-align: center; }
+.table th {
+  background: #f5f1e8;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #74867a;
+  border-bottom: 1.5px solid #e6d4cb;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f1e8;
+  color: #444;
+  vertical-align: middle;
+  text-align: center;
+}
 
 .table tr:last-child td {
   border-bottom: none;
@@ -257,7 +274,11 @@
   font-weight: 700;
 }
 
-.tdActions { display: flex; gap: 8px; justify-content: center; }
+.tdActions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
 
 .editBtn {
   padding: 6px 14px;
@@ -506,8 +527,26 @@
   cursor: not-allowed;
 }
 
-.stockInput { width: 64px; padding: 5px 0; border: 1.5px solid #e6d4cb; border-radius: 8px; font-size: 0.88rem; font-weight: 700; color: #2d6a4f; text-align: center; outline: none; background: #f5f1e8; display: block; margin: 0 auto; box-sizing: border-box; }
-.stockInput:focus { border-color: #74867a; background: #fff; }
+.stockInput {
+  width: 64px;
+  padding: 5px 0;
+  border: 1.5px solid #e6d4cb;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #2d6a4f;
+  text-align: center;
+  outline: none;
+  background: #f5f1e8;
+  display: block;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.stockInput:focus {
+  border-color: #74867a;
+  background: #fff;
+}
 
 @media (max-width: 600px) {
   .formGrid {

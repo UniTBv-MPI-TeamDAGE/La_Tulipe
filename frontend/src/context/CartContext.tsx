@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useReducer,useState, type ReactNode } from "react";
 
 export interface SelectedColor {
   id: number;
@@ -53,6 +53,7 @@ interface CartContextType {
   totalItems: number;
   totalPrice: number;
   toOrderItems: () => OrderItemPayload[];
+  
 }
 
 function getEffectiveStock(product: any, selectedColor?: SelectedColor): number {
@@ -150,18 +151,20 @@ const CartContext = createContext<CartContextType | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, { items: [] });
 
+  const [hydrated, setHydrated] = useState(false);
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) dispatch({ type: "HYDRATE", items: JSON.parse(raw) });
-    } catch {
-    }
+    } catch { }
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
-  }, [state.items]);
-
+  }, [state.items, hydrated]);
   const addProduct = (product: any, quantity = 1, selectedColor?: SelectedColor) =>
     dispatch({ type: "ADD_PRODUCT", product, quantity, selectedColor });
 

@@ -17,11 +17,11 @@ export default function ProfilePage() {
   useEffect(() => {
     getUserMe()
       .then((data) => {
-        console.log("USER ME:", data);  // <-- aici
+        console.log("USER ME:", data);  
         setForm(data);
       })
       .catch((err) => {
-        console.log("getUserMe ERROR:", err);  // <-- aici
+        console.log("getUserMe ERROR:", err);  
         navigate("/login");
       })
       .finally(() => setLoading(false));

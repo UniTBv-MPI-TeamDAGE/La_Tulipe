@@ -36,7 +36,7 @@ export async function loginUser(data: LoginRequest): Promise<LoginResponse> {
 }
 
 export async function getUserMe(token?: string): Promise<UserMeResponse> {
-  const t = token ?? localStorage.getItem("access_token");
+  const t = token ?? sessionStorage.getItem("access_token");
   const res = await fetch(`${API_URL}/api/users/me`, {
     headers: { Authorization: `Bearer ${t}` },
   });
@@ -46,7 +46,7 @@ export async function getUserMe(token?: string): Promise<UserMeResponse> {
 }
 
 export async function updateUserMe(data: UpdateMeRequest): Promise<UserMeResponse> {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
   const res = await fetch(`${API_URL}/api/users/me`, {
     method: "PUT",
     headers: {
