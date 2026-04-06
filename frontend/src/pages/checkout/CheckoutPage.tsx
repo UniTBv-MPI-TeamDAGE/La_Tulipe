@@ -54,7 +54,7 @@ export default function CheckoutPage() {
             Thank you, {confirmedOrder.customer_name}! We'll prepare your flowers with care.
           </p>
           <div className={styles.confirmActions}>
-            <button className={styles.ordersBtn} onClick={() => navigate("/profile/orders")}>
+            <button className={styles.ordersBtn} onClick={() => navigate("/orders")}>
               View my orders
             </button>
             <button className={styles.homeBtn} onClick={() => navigate("/")}>

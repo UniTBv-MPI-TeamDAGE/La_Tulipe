@@ -60,38 +60,45 @@ export default function Navbar() {
         </div>
 
         <div className={styles.actions}>
-          <Link to="/bouquet" className={styles.navLink}>
-            🌺 Build bouquet
-          </Link>
-          {isAdmin && (
-            <Link to="/admin/products" className={styles.adminLink}>
-              ⚙️ Admin
-            </Link>
-          )}
-          <Link to="/cart" className={styles.cartBtn} aria-label="Cart">
-            🛒
-            {totalItems > 0 && (
-              <span className={styles.badge}>{totalItems}</span>
-            )}
-          </Link>
-          {user ? (
-            <div className={styles.userMenu}>
-              <Link to="/profile" className={styles.navLink}>
-                👤 {user.name}
-              </Link>
-              <Link to="/profile/orders" className={styles.navLink}>
-                📦 My orders
-              </Link>
-              <button className={styles.logoutBtn} onClick={handleLogout}>
-                Sign out
-              </button>
-            </div>
-          ) : (
-            <Link to="/login" className={styles.loginBtn}>
-              Sign in
-            </Link>
-          )}
-        </div>
+  <Link to="/bouquet" className={styles.navLink}>
+    🌺 Build bouquet
+  </Link>
+  {user && (
+    <Link to="/orders" className={styles.navLink}>
+      📦 My orders
+    </Link>
+  )}
+  <Link to="/cart" className={styles.cartBtn} aria-label="Cart">
+    🛒
+    {totalItems > 0 && (
+      <span className={styles.badge}>{totalItems}</span>
+    )}
+  </Link>
+  {isAdmin && (
+    <>
+      <Link to="/admin/products" className={styles.adminLink}>
+        ⚙️ Products
+      </Link>
+      <Link to="/admin/orders" className={styles.adminLink}>
+        📋 Orders
+      </Link>
+    </>
+  )}
+  {user ? (
+    <div className={styles.userMenu}>
+      <Link to="/profile" className={styles.navLink}>
+        👤 {user.name}
+      </Link>
+      <button className={styles.logoutBtn} onClick={handleLogout}>
+        Sign out
+      </button>
+    </div>
+  ) : (
+    <Link to="/login" className={styles.loginBtn}>
+      Sign in
+    </Link>
+  )}
+</div>
 
         <button
           className={styles.hamburger}

@@ -123,3 +123,16 @@ export async function createCategory(name: string) {
   }
   return res.json();
 }
+
+export async function updateProductStock(id: number, stock: number) {
+  const res = await fetch(`${BASE}/api/products/${id}/stock`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeader() },
+    body: JSON.stringify({ stock }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail ?? "Failed to update stock");
+  }
+  return res.json();
+}

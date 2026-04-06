@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart, makeCartKey } from "../../../context/CartContext";
+import { useToast } from "../../../context/ToastContext";
 import styles from "./ProductCard.module.css";
 
 interface Props {
@@ -20,6 +21,8 @@ export default function ProductCard({ product }: Props) {
   const outOfStock = product.stock === 0;
   const atMax = !hasColorVariants && cartQty >= product.stock;
 
+  const { showToast } = useToast();
+
   function handleAdd(e: React.MouseEvent) {
     e.stopPropagation();
     if (hasColorVariants) {
@@ -28,6 +31,7 @@ export default function ProductCard({ product }: Props) {
     }
     if (outOfStock || atMax) return;
     addProduct(product, 1);
+    showToast("Added to cart!");
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1400);
   }
