@@ -1,35 +1,180 @@
-.page { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
-.title { font-size: 1.8rem; font-weight: 800; color: #333; margin: 0 0 24px; }
+.page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+}
 
-.stateBox { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 60px; color: #74867a; }
-.spinner { width: 36px; height: 36px; border: 3px solid #e6d4cb; border-top-color: #d4888c; border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #333;
+    margin: 0 0 24px;
+}
 
-.tableWrapper { background: #fff; border-radius: 14px; border: 1.5px solid #e6d4cb; overflow: hidden; }
-.table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-.table th { background: #f5f1e8; padding: 12px 16px; text-align: left; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #74867a; border-bottom: 1.5px solid #e6d4cb; }
-.table td { padding: 12px 16px; border-bottom: 1px solid #f5f1e8; color: #444; vertical-align: middle; }
-.table tr:last-child td { border-bottom: none; }
+.stateBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 60px;
+    color: #74867a;
+}
 
-.orderNum { font-family: monospace; font-size: 0.82rem; color: #74867a; font-weight: 600; }
-.total { font-weight: 700; }
-.date { font-size: 0.85rem; color: #74867a; }
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e6d4cb;
+    border-top-color: #d4888c;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
 
-.badge { padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
-.badge_pending { background: #fff3cd; color: #856404; }
-.badge_confirmed { background: #d1e7dd; color: #0f5132; }
-.badge_delivered { background: #cfe2ff; color: #084298; }
-.badge_cancelled { background: #f8d7da; color: #842029; }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
-.expandBtn { background: none; border: 1.5px solid #e6d4cb; border-radius: 8px; padding: 5px 10px; cursor: pointer; color: #74867a; font-size: 0.75rem; }
-.expandBtn:hover { border-color: #74867a; }
+.tableWrapper {
+    background: #fff;
+    border-radius: 14px;
+    border: 1.5px solid #e6d4cb;
+    overflow: hidden;
+}
 
-.itemsRow td { padding: 0; background: #fdfaf8; }
-.itemsBox { padding: 16px 24px 20px; border-top: 1px dashed #e6d4cb; }
-.deliveryAddress { font-size: 0.85rem; color: #74867a; margin: 0 0 6px; }
-.cardMsg { font-size: 0.85rem; color: #d4888c; font-style: italic; margin: 0 0 12px; }
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
 
-.itemsTable { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-.itemsTable th { padding: 6px 12px; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #bdb4ac; border-bottom: 1px solid #e6d4cb; }
-.itemsTable td { padding: 8px 12px; border-bottom: 1px solid #f5f1e8; }
-.itemsTable tr:last-child td { border-bottom: none; }
+.table th {
+  background: #f5f1e8;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #74867a;
+  border-bottom: 1.5px solid #e6d4cb;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f1e8;
+  color: #444;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.orderNum {
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: #74867a;
+    font-weight: 600;
+}
+
+.total {
+    font-weight: 700;
+}
+
+.date {
+    font-size: 0.85rem;
+    color: #74867a;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.badge_pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge_confirmed {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.badge_delivered {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.badge_cancelled {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.expandBtn {
+    background: none;
+    border: 1.5px solid #e6d4cb;
+    border-radius: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #74867a;
+    font-size: 0.75rem;
+}
+
+.expandBtn:hover {
+    border-color: #74867a;
+}
+
+.itemsRow td {
+    padding: 0;
+    background: #fdfaf8;
+}
+
+.itemsBox {
+    padding: 16px 24px 20px;
+    border-top: 1px dashed #e6d4cb;
+}
+
+.deliveryAddress {
+    font-size: 0.85rem;
+    color: #74867a;
+    margin: 0 0 6px;
+}
+
+.cardMsg {
+    font-size: 0.85rem;
+    color: #d4888c;
+    font-style: italic;
+    margin: 0 0 12px;
+}
+
+.itemsTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.itemsTable th {
+    padding: 6px 12px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #bdb4ac;
+    border-bottom: 1px solid #e6d4cb;
+}
+
+.itemsTable td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f5f1e8;
+}
+
+.itemsTable tr:last-child td {
+    border-bottom: none;
+}

@@ -40,7 +40,11 @@ export default function RegisterPage() {
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
     if (!form.name.trim()) errs.name = "Name required";
-    if (!form.email.trim()) errs.email = "Email required";
+    if (!form.email.trim()) {
+      errs.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errs.email = "Email must contain a valid @ address";
+    }
     if (form.password.length < 8)
       errs.password = "Password must have at least 8 characters";
     if (form.password !== form.confirm_password)
@@ -74,7 +78,7 @@ export default function RegisterPage() {
           setErrors({ general: msg });
         }
       } else if (apiErr.status === 403) {
-        setErrors({ admin_code: "Invalid admin code" });}
+        setErrors({ admin_code: "Unauthorized access. Permission for admin denied." });}
       
       else {
         setErrors({ general: "Couldn't connect to the server" });

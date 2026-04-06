@@ -72,7 +72,6 @@ export default function AdminProducts() {
       setCategories(c);
       setColors(col);
     } catch {
-      //
     } finally {
       setLoading(false);
     }

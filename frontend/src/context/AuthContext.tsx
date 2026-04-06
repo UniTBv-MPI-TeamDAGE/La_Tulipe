@@ -22,10 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const name = localStorage.getItem("user_name");
-    const role = localStorage.getItem("user_role");
-    const email = localStorage.getItem("user_email");
+    const token = sessionStorage.getItem("access_token");
+    const name = sessionStorage.getItem("user_name");
+    const role = sessionStorage.getItem("user_role");
+    const email = sessionStorage.getItem("user_email");
     if (token && name && role && email) {
       setUser({ token, name, role, email });
     }
@@ -33,25 +33,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (data: { access_token: string; name: string; role: string ; email:string}) => {
-    localStorage.setItem("access_token", data.access_token);
-    localStorage.setItem("user_name", data.name);
-    localStorage.setItem("user_role", data.role);
-    localStorage.setItem("user_email", data.email);
+    sessionStorage.setItem("access_token", data.access_token);
+    sessionStorage.setItem("user_name", data.name);
+    sessionStorage.setItem("user_role", data.role);
+    sessionStorage.setItem("user_email", data.email);
     setUser({ token: data.access_token, name: data.name, role: data.role , email: data.email});
   };
 
   const logout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_name");
-    localStorage.removeItem("user_role");
-    localStorage.removeItem("user_email"); 
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("user_name");
+    sessionStorage.removeItem("user_role");
+    sessionStorage.removeItem("user_email"); 
     setUser(null);
   };
 
   const updateUser = (data: { name?: string; phone?: string }) => {
     if (!user) return;
     if (data.name) {
-      localStorage.setItem("user_name", data.name);
+      sessionStorage.setItem("user_name", data.name);
       setUser((prev) => prev ? { ...prev, name: data.name! } : prev);
     }
   };

@@ -18,7 +18,9 @@
 }
 
 @media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; }
+  .layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .formSection {
@@ -51,7 +53,8 @@
   font-size: 12px;
 }
 
-.input, .textarea {
+.input,
+.textarea {
   padding: 10px 14px;
   border: 1.5px solid #e6d4cb;
   border-radius: 10px;
@@ -62,7 +65,8 @@
   transition: border-color 0.15s;
 }
 
-.input:focus, .textarea:focus {
+.input:focus,
+.textarea:focus {
   outline: none;
   border-color: #74867a;
 }

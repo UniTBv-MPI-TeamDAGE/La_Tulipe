@@ -24,8 +24,8 @@
 .brandLogo {
   width: 150px;
   display: block;
-  margin-top: -35px;   /* sus/jos — negativ = mai sus */
-  margin-left: 20px;   /* stanga/dreapta */
+  margin-top: -35px;
+  margin-left: 20px;
 }
 
 .col {
@@ -33,6 +33,7 @@
   flex-direction: column;
   gap: 10px;
 }
+
 .colTitle {
   font-size: 0.75rem;
   font-weight: 700;
@@ -41,6 +42,7 @@
   color: #d4888c;
   margin: 0 0 4px;
 }
+
 .colLink {
   font-size: 0.88rem;
   color: #bdb4ac;
@@ -48,7 +50,11 @@
   transition: color 0.2s;
   line-height: 1.5;
 }
-.colLink:hover { color: #f5f1e8; }
+
+.colLink:hover {
+  color: #f5f1e8;
+}
+
 .colText {
   font-size: 0.88rem;
   color: #bdb4ac;
@@ -61,6 +67,7 @@
   padding: 16px 24px;
   text-align: center;
 }
+
 .bottom p {
   font-size: 0.82rem;
   color: #74867a;
@@ -72,6 +79,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 28px;
   }
+
   .brand {
     grid-column: 1 / -1;
   }
