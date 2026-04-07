@@ -1,15 +1,16 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from fastapi import HTTPException
 
+from app.models.color import Color
 from app.services.color_service import (
+    create_color,
+    delete_color,
     get_all_colors,
     get_color_or_404,
-    create_color,
     update_color,
-    delete_color,
 )
-from app.models.color import Color
 
 
 def test_get_all_colors():

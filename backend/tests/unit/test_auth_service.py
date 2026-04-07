@@ -1,11 +1,16 @@
-import pytest
 from unittest.mock import MagicMock
-from fastapi import HTTPException
-from sqlalchemy.exc import IntegrityError
 
-from app.services.auth_service import register_user, login_user, logout_user
-from app.schemas.auth import RegisterRequest, LoginRequest
+import pytest
+from fastapi import HTTPException
+
 from app.models.user import User
+from app.schemas.auth import LoginRequest, RegisterRequest
+from app.services.auth_service import (
+    login_user,
+    logout_user,
+    register_user,
+)
+
 
 def make_register_data(**overrides):
     base = dict(

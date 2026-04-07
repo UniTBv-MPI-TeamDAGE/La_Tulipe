@@ -1,16 +1,18 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from fastapi import HTTPException
 
-from app.services.category_service import (
-    get_category_or_404,
-    create_category,
-    update_category,
-    delete_category,
-    get_products_by_category
-)
 from app.models.category import Category
 from app.models.product import Product
+from app.services.category_service import (
+    create_category,
+    delete_category,
+    get_category_or_404,
+    get_products_by_category,
+    update_category,
+)
+
 
 def test_get_category_not_found():
     db = MagicMock()

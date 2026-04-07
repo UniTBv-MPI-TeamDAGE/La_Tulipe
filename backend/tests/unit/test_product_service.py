@@ -1,17 +1,18 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from fastapi import HTTPException
 
+from app.models.category import Category
+from app.models.product import Product, ProductSeason, ProductType
 from app.services.product_service import (
     _resolve_color_stock_pairs,
     _validate_color_stock_total,
-    get_product_or_404,
     create_product,
-    update_product_stock,
     delete_product,
+    get_product_or_404,
+    update_product_stock,
 )
-from app.models.product import Product, ProductType, ProductSeason
-from app.models.category import Category
 
 
 def test_resolve_color_stock_duplicate():
@@ -167,6 +168,7 @@ def test_update_product_stock_success():
     product = Product(id=1, stock=5)
 
     query = MagicMock()
+    query.options.return_value = query
     query.filter.return_value = query
     query.first.return_value = product
 
@@ -174,7 +176,7 @@ def test_update_product_stock_success():
 
     result = update_product_stock(product_id=1, stock=10, db=db)
 
-    assert product.stock == 10
+    assert result.stock == 10
     db.commit.assert_called_once()
 
 

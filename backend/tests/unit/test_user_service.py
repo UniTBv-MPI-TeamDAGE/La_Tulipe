@@ -1,9 +1,8 @@
-import pytest
 from unittest.mock import MagicMock
 
-from app.services.user_service import get_me, update_me
 from app.models.user import User
 from app.schemas.user import UpdateMeRequest
+from app.services.user_service import get_me, update_me
 
 
 def test_get_me():

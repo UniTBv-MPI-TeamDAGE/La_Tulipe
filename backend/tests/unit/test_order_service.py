@@ -1,17 +1,18 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from fastapi import HTTPException
 
+from app.models.order import Order, OrderStatus
+from app.models.product import Product
+from app.models.user import User
+from app.schemas.order import OrderCreate
 from app.services.order_service import (
     create_order,
-    get_my_orders,
     get_my_order_or_404,
+    get_my_orders,
     update_order_status_for_admin,
 )
-from app.models.order import Order, OrderStatus
-from app.models.user import User
-from app.models.product import Product
-from app.schemas.order import OrderCreate
 
 
 def make_order_data(items):
