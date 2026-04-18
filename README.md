@@ -36,15 +36,15 @@ La Tulipe este o aplicatie web care permite clientilor sa cumpere flori online, 
 ```
 ┌─────────────┐        ┌─────────────┐        ┌─────────────┐
 │   Frontend  │  HTTP  │   Backend   │  SQL   │  Database   │
-│    React    │◄──────►│Flask (Python│◄──────►│ PostgreSQL  │
-│  Port 3000  │        │  Port 5000  │        │  Port 5432  │
+│    React    │◄──────►│FastAPI (Python)│◄──────►│ PostgreSQL  │
+│  Port 5174  │        │  Port 8000  │        │  Port 5432  │
 └─────────────┘        └─────────────┘        └─────────────┘
 ```
 
 | Layer | Tehnologie |
 |---|---|
-| Frontend | React 18, React Router, Context API |
-| Backend | Python 3.11, Flask, SQLAlchemy |
+| Frontend | React 19, React Router, Context API |
+| Backend | Python 3.11, FastAPI, SQLAlchemy |
 | Baza de date | PostgreSQL 18 |
 | Autentificare | JWT (JSON Web Tokens) + bcrypt |
 | Infrastructure | Docker, Docker Compose |
@@ -77,9 +77,9 @@ docker compose up --build
 ### Acces
 | Serviciu | URL |
 |---|---|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:5000 |
-| Health Check | http://localhost:5000/api/health |
+| Frontend | http://localhost:5174 |
+| Backend API | http://localhost:8000 |
+| Health Check | http://localhost:8000/api/health |
 
 ### Variabile de mediu (.env.example)
 ```
@@ -88,7 +88,7 @@ SECRET_KEY=your-secret-key-here
 JWT_EXPIRY=3600
 DB_USER=postgres
 DB_PASSWORD=postgres
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:8000
 ```
 
 ---
@@ -99,23 +99,32 @@ REACT_APP_API_URL=http://localhost:5000
 La_Tulipe/
 ├── backend/
 │   ├── app/
+│   │   ├── core/            # Configurare bootstrap, securitate
+│   │   ├── database/        # Conexiune DB
 │   │   ├── models/          # Modele SQLAlchemy (User, Product, Order)
-│   │   ├── routes/          # Endpoint-uri Flask (auth, products, orders)
-│   │   ├── middleware/       # JWT auth, admin check
+│   │   ├── routes/          # Endpoint-uri FastAPI (auth, products, orders)
+│   │   ├── middleware/      # JWT auth, admin check
+│   │   ├── schemas/         # Pydantic schemas
+│   │   ├── services/        # Logica business
 │   │   └── __init__.py
 │   ├── tests/               # Teste unitare pytest
 │   ├── Dockerfile
+│   ├── pyproject.toml
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # Componente reutilizabile (Navbar, Footer, etc.)
 │   │   ├── pages/           # Pagini (Home, Cart, Checkout, Admin)
 │   │   ├── context/         # AuthContext, CartContext
-│   │   └── App.jsx
+│   │   ├── hooks/           # Custom hooks
+│   │   ├── services/        # API calls
+│   │   ├── utils/           # Utility functions
+│   │   ├── dtos/            # Data transfer objects
+│   │   └── App.tsx
+│   ├── tests/               # Teste E2E Playwright
 │   ├── Dockerfile
 │   └── package.json
 ├── features/                # Scenarii BDD Gherkin (.feature)
-├── e2e/                     # Teste E2E Playwright
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml           # Linting + Teste la fiecare PR
@@ -188,15 +197,24 @@ test(orders): add unit tests for order placement
 
 ## 9. Rulare Teste
 
+### 🔹 Teste unitare + integrare (Backend)
+
 ```bash
-# Teste unitare backend
-docker compose exec backend pytest --cov=app tests/
+cd backend/tests
+pytest -q
+```
 
-# Linter backend
-docker compose exec backend ruff check .
+### 🔹 Teste E2E Playwright
 
-# Teste E2E Playwright
-cd e2e && npx playwright test
+```bash
+cd frontend
+npx playwright test
+```
+
+🔹 Raport teste E2E
+
+```bash
+npx playwright show-report
 ```
 
 ---
