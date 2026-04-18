@@ -77,7 +77,8 @@ jobs:
 
       - name: Create .env file
         run: |
-          cp .env.example .env
+          cp backend/.env.example backend/.env
+          cp frontend/.env.example frontend/.env
 
       - name: Start application stack
         run: |
