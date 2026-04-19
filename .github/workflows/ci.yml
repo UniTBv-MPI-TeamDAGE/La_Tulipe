@@ -98,6 +98,25 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
 
+      - name: Debug - screenshot register page
+        working-directory: ./frontend
+        run: |
+          npx playwright screenshot --browser chromium http://localhost:3000/register debug-register.png
+          echo "=== Curl register page ==="
+          curl -v http://localhost:3000/register 2>&1 | head -40
+          echo "=== Curl backend health ==="
+          curl -s http://localhost:8000/api/health
+          echo "=== Frontend logs ==="
+          docker logs latulipe_frontend --tail 30
+
+      - name: Upload debug screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshot
+          path: frontend/debug-register.png
+          retention-days: 3
+
       - name: Run E2E tests
         working-directory: ./frontend
         env:
