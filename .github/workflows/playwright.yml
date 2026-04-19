@@ -47,6 +47,14 @@ jobs:
           ADMIN_REGISTRATION_CODE: ${{ secrets.ADMIN_REGISTRATION_CODE }}
         run: alembic upgrade head
 
+      - name: Seed test data
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/latulipe_test
+          SECRET_KEY: test-secret-key
+          ADMIN_REGISTRATION_CODE: ${{ secrets.ADMIN_REGISTRATION_CODE }}
+        run: python seed_test_data.py
+
       - name: Start backend
         working-directory: ./backend
         env:
