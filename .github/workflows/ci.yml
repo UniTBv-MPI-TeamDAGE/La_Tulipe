@@ -97,7 +97,7 @@ jobs:
             done
           '
           echo "Backend is up!"
-          timeout 60 bash -c 'until curl -sf http://localhost:3000; do sleep 3; done'
+          timeout 60 bash -c 'until curl -sf http://localhost:5173; do sleep 3; done'
           echo "Frontend is up!"
 
       - name: Install Playwright
@@ -110,9 +110,9 @@ jobs:
       - name: Debug - screenshot register page
         working-directory: ./frontend
         run: |
-          npx playwright screenshot --browser chromium http://localhost:3000/register debug-register.png
+          npx playwright screenshot --browser chromium http://localhost:5173/register debug-register.png
           echo "=== Curl register page ==="
-          curl -v http://localhost:3000/register 2>&1 | head -40
+          curl -v http://localhost:5173/register 2>&1 | head -40
           echo "=== Curl backend health ==="
           curl -s http://localhost:8000/api/health
           echo "=== Frontend logs ==="
@@ -130,7 +130,7 @@ jobs:
         working-directory: ./frontend
         env:
           CI: true
-          BASE_URL: http://localhost:3000
+          BASE_URL: http://localhost:5173
         run: npx playwright test --reporter=github
 
       - name: Upload Playwright report
