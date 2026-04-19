@@ -5,8 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.database.db import SessionLocal
 from app.models.category import Category
-from app.models.color import Color
-from app.models.product import Product, ProductColorStock, ProductSeason, ProductType
+from app.models.product import Product, ProductSeason, ProductType
 
 
 def seed() -> None:
@@ -18,8 +17,6 @@ def seed() -> None:
         category = Category(name="Flowers")
         db.add(category)
         db.flush()
-
-        color = db.query(Color).first()
 
         img = "https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg"
 
@@ -60,17 +57,6 @@ def seed() -> None:
         ]
         for p in products:
             db.add(p)
-        db.flush()
-
-        if color:
-            for p in products:
-                db.add(
-                    ProductColorStock(
-                        product_id=p.id,
-                        color_id=color.id,
-                        stock=100,
-                    )
-                )
 
         db.commit()
         print("Seeded test data successfully.")
