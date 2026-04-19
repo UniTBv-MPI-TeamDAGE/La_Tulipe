@@ -5,7 +5,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.database.db import SessionLocal
 from app.models.category import Category
+from app.models.color import Color 
+from app.models.order import Order  
+from app.models.order_item import OrderItem 
 from app.models.product import Product, ProductSeason, ProductType
+from app.models.user import User  
 
 
 def seed() -> None:
