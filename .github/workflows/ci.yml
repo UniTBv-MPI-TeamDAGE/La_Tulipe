@@ -72,7 +72,7 @@ jobs:
       - name: Create .env files
         run: |
           cp backend/.env.example backend/.env
-          echo "VITE_API_URL=http://localhost:8000" > frontend/.env
+          echo "VITE_API_URL=http://backend:8000" > frontend/.env
 
       - name: Fix entrypoint permissions
         run: chmod +x backend/entrypoint.sh
