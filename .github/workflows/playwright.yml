@@ -1,13 +1,21 @@
-name: Playwright Tests
-
-on:
-  pull_request:
-    branches: [main]
-
-jobs:
-  test-e2e:
+test-e2e:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: latulipe_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +35,7 @@ jobs:
       - name: Run Alembic migrations
         working-directory: ./backend
         env:
-          DATABASE_URL: sqlite:///./test.db
+          DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/latulipe_test
           SECRET_KEY: test-secret-key
           ADMIN_REGISTRATION_CODE: test-admin-code
         run: alembic upgrade head
@@ -35,7 +43,7 @@ jobs:
       - name: Start backend
         working-directory: ./backend
         env:
-          DATABASE_URL: sqlite:///./test.db
+          DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/latulipe_test
           SECRET_KEY: test-secret-key
           ADMIN_REGISTRATION_CODE: test-admin-code
         run: |
