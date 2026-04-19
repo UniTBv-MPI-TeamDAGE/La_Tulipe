@@ -71,8 +71,17 @@ jobs:
 
       - name: Create .env files
         run: |
-          cp backend/.env.example backend/.env
-          echo "VITE_API_URL=http://backend:8000" > frontend/.env
+          cat > backend/.env << 'EOF'
+          DATABASE_URL=postgresql://postgres:postgres@db:5432/latulipe_db
+          DB_HOST=db
+          DB_PORT=5432
+          DB_USER=postgres
+          DB_PASSWORD=postgres
+          DB_NAME=latulipe_db
+          SECRET_KEY=ci-secret-key-not-for-production
+          JWT_EXPIRY=3600
+          EOF
+          echo "VITE_API_URL=http://localhost:8000" > frontend/.env
 
       - name: Fix entrypoint permissions
         run: chmod +x backend/entrypoint.sh
