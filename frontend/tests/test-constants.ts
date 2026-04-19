@@ -3,5 +3,5 @@ export const TEST_USER = {
   email: 'test@example.com',
   password: '12345678',
   phone: '0712345678',
-  adminCode: 'secret123',
+  adminCode: process.env.ADMIN_CODE ?? '',
 } as const;
